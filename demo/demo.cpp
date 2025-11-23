@@ -14,17 +14,19 @@ int main() {
 	properties.title = "UI Example";
 
 	Window window(properties);
-	// Create a display
+
 	Display display(window);
+	window.clearColor(glm::vec4(1, 0, 1, 1.0f));
+
 	res::ResourceManager res;
 	
 	ShapeRenderer2D& shapeRenderer = display.createRenderer<ShapeRenderer2D>();
 	TextRenderer textRenderer(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
 	
-	auto& v1 = display.createChild<Scrollable>		(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)), shapeRenderer);
-	auto& v2 = display.createChild<Container>		(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
-	auto& v3 = display.createChild<Container>		(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)));
-	auto& v4 = display.createChild<Container>		(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
+	auto& v1 = display.createChild<Scrollable>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)), shapeRenderer);
+	auto& v2 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
+	auto& v3 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)));
+	auto& v4 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
 	
 	
 	auto& textInput = v1.createChild<TextInput>(
@@ -46,25 +48,54 @@ int main() {
 	v3.createChild<ColoredRect>(alignment::ElementAlignment(), glm::vec4(0, 0, 0, 1), shapeRenderer);
 	v4.createChild<ColoredRect>(alignment::ElementAlignment(), glm::vec4(0.05, 0.05, 0.05, 1), shapeRenderer);
 
-	auto& textbox = v3
-	.createChild<VerticalCenterer>()
-	.createChild<HorisontalCenterer>()
-	.createChild<Text>(
-		alignment::ElementAlignment().setWidth(alignment::Relative(0.8f)),
-		glm::vec4(1, 1, 1, 1),
-		14.0f,
-		textRenderer
+	auto& gradient = v3
+	.createChild<ShaderQuad>(
+		alignment::ElementAlignment(),
+R"(
+#version 330 core
+
+out vec4 FragColor;
+
+in vec2 uv;
+in vec2 pixelPosition;
+
+void main()
+{
+    vec3 color = vec3(uv, 1.0);
+
+    float spacing = 20.0;
+    float dotRadius = 1.0;
+
+    vec2 hex = vec2(
+        (2.0/3.0) * pixelPosition.x,
+        (-1.0/3.0) * pixelPosition.x + (sqrt(3.0)/3.0) * pixelPosition.y
+    ) / spacing;
+
+    vec3 cube = vec3(hex, -hex.x - hex.y);
+    vec3 rcube = round(cube);
+
+    vec3 diff = abs(rcube - cube);
+
+    if(diff.x > diff.y && diff.x > diff.z)
+        rcube.x = -rcube.y - rcube.z;
+    else if(diff.y > diff.z)
+        rcube.y = -rcube.x - rcube.z;
+
+    vec2 hexCenter = spacing * vec2(
+        1.5 * rcube.x,
+        (sqrt(3.0)/2.0) * rcube.x + sqrt(3.0) * rcube.y
+    );
+
+    vec2 snapped = floor(hexCenter + 0.5);
+
+    float d = distance(pixelPosition, snapped);
+    if(d < dotRadius)
+        color = vec3(0.0);
+
+    FragColor = vec4(color, 1.0);
+}
+)"
 	);
-	// textbox.growToFitText = false;
-	textbox.setText("This is a text box. It can contain multiple lines of text.\n"
-		"Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-		"Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-		"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-		"Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-	);
-	textbox.verticallyFlexible = true;
-	textbox.horisontallyFlexible = true;
 
 	auto& button = v4
 	.createChild<VerticalCenterer>()
@@ -84,12 +115,6 @@ int main() {
 	);
 	button.text.setText("Press me!");
 
-	// Draw lightsource
-	window.clearColor(glm::vec4(0.05, 0.05, 0.05, 1.0f));
-	glm::vec2 lastMousePos = window.getInput().mouse();
-
-	// Create a display
-	window.clearColor(glm::vec4(1, 0, 1, 1.0f));
 	time::Moment lastTime = time::now();
 	while (!window.shouldClose()) {
 		time::Moment now = time::now();
@@ -103,13 +128,14 @@ int main() {
 		window.clearScreen();
 		display.render();
 		window.display();
+
 		// Include performance metrics in the title
-		window.setTitle(std::string("UI Example ("
+		window.setTitle("UI Example ("
 			+ std::to_string(delta.millis()) + "ms"
 			+ " fps: "
 			+ std::to_string((int)maths::round(1.0f / static_cast<float>(delta.seconds()), 1))
 			+ ")"
-		));
+		);
 	}
 	
 	return 0;

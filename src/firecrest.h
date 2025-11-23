@@ -58,6 +58,7 @@
 #include "RoundedColoredRect.h"
 #include "Scene3D.h"
 #include "Scrollable.h"
+#include "ShaderQuad.h"
 #include "ShapeRenderer2D.h"
 #include "Text.h"
 #include "TextBox.h"
