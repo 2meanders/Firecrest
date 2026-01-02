@@ -6,7 +6,7 @@
 #include "fiv.hpp"
 #include "gl/VertexArray.h"
 #include "gl/VertexBuffer.h"
-#include "gl/Texture.h"
+#include "gl/Texture2D.h"
 #include "Window.h"
 #include <memory>
 
@@ -17,7 +17,7 @@ namespace fc {
 	class TextRenderer {
 	private:
 		struct Character {
-			std::shared_ptr<gl::Texture> texture;
+			std::shared_ptr<gl::Texture2D> texture;
 			glm::ivec2 size = { 0, 0 };
 			glm::ivec2 bearing = { 0, 0 };
 			uint32_t advance = 0;

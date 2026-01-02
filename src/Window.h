@@ -22,6 +22,7 @@ namespace fc {
 	private:
 		GLFWwindow* m_Handle;
 		Input input;
+		glm::vec4 m_ClearColor;
 	public:
 		Window(WindowProperties& properties);
 		~Window();
@@ -38,7 +39,7 @@ namespace fc {
 		bool isMouseLocked() const;
 		bool isMouseFree() const;
 
-		void clearColor(glm::vec4 color) const;
+		void clearColor(glm::vec4 color);
 		void clearScreen() const;
 
 		inline const GLFWwindow* const handle() const { return m_Handle; }

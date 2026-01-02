@@ -1,5 +1,6 @@
 #include "ResourceManager.h"
 #include "MeshLoader.h"
+#include "gl/Texture2D.h"
 
 inline size_t hashMesh(const std::vector<fc::gl::Vertex3D>& vertices, const std::vector<GLuint>& indices) {
     size_t seed = vertices.size() ^ (indices.size() << 1);
@@ -25,7 +26,7 @@ fc::res::TextureHandle fc::res::ResourceManager::loadTexture(const std::string &
         }
     }
 
-    const auto texture = std::make_shared<gl::Texture>(path, blurred);
+    const auto texture = std::make_shared<gl::Texture2D>(path, blurred);
     textures[key] = texture;
     return texture;
 }

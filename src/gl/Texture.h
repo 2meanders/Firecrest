@@ -1,37 +1,54 @@
 #pragma once
 #include <string>
 #include "OpenGL.h"
+#include "glm/glm.hpp"
 
 namespace fc::gl {
 
+	template<GLenum Dimension>
 	class Texture {
-	private:
+	protected:
 		GLuint m_Handle;
-		int m_Width, m_Height;
 	public:
-		Texture();
-		Texture(const std::string& path, bool blurred);
-		Texture(GLint textureFormat, GLsizei width, GLsizei height, GLenum dataFormat, GLenum dataType, const void* data);
-		~Texture();
+		Texture() {
+			glGenTextures(1, &m_Handle);
+		}
+
+		~Texture() {
+			if(m_Handle != 0) {
+				glDeleteTextures(1, &m_Handle);
+			}
+		}
 
 		// move assignment
-		Texture& operator=(Texture&& other);
+		Texture& operator=(Texture&& other) {
+			std::swap(m_Handle, other.m_Handle);
+			return *this;
+		}
 		// move constructor
-		Texture(Texture&& other);
-		
+		Texture(Texture&& other) {
+			m_Handle = other.m_Handle;
+			other.m_Handle = 0;
+		}
 
 		Texture(const Texture&) = delete;
 		Texture& operator=(const Texture&) = delete;
 
-		void bind(size_t slot) const;
-		inline void bind() const;
-		static void unbind();
+		void bind(size_t slot) const {
+			glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(slot));
+			glBindTexture(Dimension, m_Handle);
+		}
+		inline void bind() const {
+			glBindTexture(Dimension, m_Handle);
+		}
+		static void unbind() {
+			glBindTexture(Dimension, 0);
+		}
 
-		inline int getWidth() const { return m_Width; }
-		inline int getHeight() const { return m_Height; }
 		inline GLuint getHandle() const { return m_Handle; }
 
-		Texture clone() const;
+	protected:
+		virtual glm::uvec3 size() const = 0;
 	};
 
 }

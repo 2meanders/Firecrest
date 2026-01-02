@@ -1,5 +1,6 @@
 #include "TexturedBatchRenderer.h"
 #include "glm/gtc/matrix_transform.hpp"
+#include "gl/Texture2D.h"
 
 static constexpr const char* VERTEX_SOURCE = R"(
 #version 450 core

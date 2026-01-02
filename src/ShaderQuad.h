@@ -12,6 +12,8 @@ namespace fc {
     class ShaderQuad : public Element {
     public:
         gl::Shader m_Shader;
+
+        std::function<void(gl::Shader&)> beforeRender;
     private:
         gl::VertexArray m_VAO;
         gl::VertexBuffer m_VBO;
@@ -24,7 +26,7 @@ namespace fc {
         /// - in vec2 uv; // The UV coordinates of the fragment, ranging from (0,0) at bottom-left to (1,1) at top-right.
         ///
         /// - in vec2 pixelPosition; // The pixel position of the fragment in screen space
-        ShaderQuad(alignment::ElementAlignment alignment, const std::string& shaderCode) : Element(alignment) {
+        ShaderQuad(alignment::ElementAlignment alignment, const std::string& shaderCode, std::function<void(gl::Shader&)> beforeRender) : Element(alignment), beforeRender(beforeRender) {
             const std::string vertexShader = R"(
                 #version 330 core
                 layout(location = 0) in vec2 aPos;
@@ -75,6 +77,8 @@ namespace fc {
             m_IBO.setIndices(indices, sizeof(indices) / sizeof(GLuint));
         }
 
+        ShaderQuad(alignment::ElementAlignment alignment, const std::string& shaderCode) : ShaderQuad(alignment, shaderCode, nullptr) {}
+
         void render(const Window& window, time::Duration delta) override {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -83,6 +87,10 @@ namespace fc {
             glCullFace(GL_BACK);
 		    
             m_Shader.bind();
+
+            if (beforeRender) {
+                beforeRender(m_Shader);
+            }
 
             glm::mat4 projection = window.orthographicProjection();
             m_Shader.setUniformMat4f("projection", projection);

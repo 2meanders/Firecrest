@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "glm/gtc/type_ptr.hpp"
 #include "RenderRegion.h"
+#include "Texture2D.h"
 
 namespace fc::gl {
 

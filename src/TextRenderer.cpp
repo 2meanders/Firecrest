@@ -45,7 +45,7 @@ void fc::TextRenderer::addChar(char charCode) {
 		throw std::exception(("Unable to load character with unicode code point: " + std::to_string(charCode)).c_str());
 	}
 	Character character = {
-		std::make_shared<gl::Texture>(
+		std::make_shared<gl::Texture2D>(
 			GL_RED,
 			_face->glyph->bitmap.width,
 			_face->glyph->bitmap.rows,
@@ -159,7 +159,7 @@ void fc::TextRenderer::renderText(const Window& window, const std::string& text,
 	}
 	_vao.unbind();
 	_vbo.unbind();
-	gl::Texture::unbind();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 float fc::TextRenderer::width(const std::string& text, float scale) {
