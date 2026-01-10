@@ -12,9 +12,8 @@ namespace fc {
 		TextInput(alignment::ElementAlignment alignment, glm::vec4 backgroundColor, glm::vec4 textColor, float textSize, ShapeRenderer2D& boxRenderer, TextRenderer& textRenderer) :
 			TextBox(alignment, backgroundColor, textColor, textSize, boxRenderer, textRenderer) 
 		{
-			_text.verticallyFlexible = false;
-			_text.horisontallyFlexible = false;
 			focusable = true;
+			_text.wrapTightly = false;
 		}
 
 		virtual void onLetterTyped(Input& input, input::UnicodeCodePoint letter) override {

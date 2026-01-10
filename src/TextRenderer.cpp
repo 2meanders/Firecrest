@@ -106,6 +106,10 @@ fc::TextRenderer::~TextRenderer() {
 }
 
 void fc::TextRenderer::renderText(const Window& window, const std::string& text, glm::vec3 pos, float scale, glm::vec4 color) {
+	renderText(static_cast<glm::vec2>(window.dimensions()), text, pos, scale, color);
+}
+
+void fc::TextRenderer::renderText(glm::vec2 viewportSize, const std::string &text, glm::vec3 pos, float scale, glm::vec4 color) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -114,7 +118,7 @@ void fc::TextRenderer::renderText(const Window& window, const std::string& text,
 	
 	glDisable(GL_DEPTH_TEST);
 
-	glm::mat4 projection = window.orthographicProjection();
+	glm::mat4 projection = glm::ortho(0.0f, viewportSize.x, 0.0f, viewportSize.y);
 	_textShader->bind();
 	_textShader->setUniform4f("textColor", color.x, color.y, color.z, color.w);
 	_textShader->setUniformMat4f("projection", projection);

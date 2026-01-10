@@ -37,7 +37,7 @@ int main() {
 		, shapeRenderer
 		, textRenderer
 	);
-	textInput._text.verticallyFlexible = true;
+	textInput._text.wrapTightly = true;
 	textInput.setText("This is a text input field. Try it!");
 	
 	

@@ -46,6 +46,7 @@ namespace fc {
 		TextRenderer& operator=(const TextRenderer&) = delete;
 
 		void renderText(const Window& window, const std::string& text, glm::vec3 pos, float scale, glm::vec4 color);
+		void renderText(glm::vec2 viewportSize, const std::string& text, glm::vec3 pos, float scale, glm::vec4 color);
 		float width(const std::string& text, float scale);
 		float height(const std::string& text, float scale);
 		float lineHeight(float scale);

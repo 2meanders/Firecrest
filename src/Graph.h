@@ -36,8 +36,7 @@ namespace fc {
                 )) 
             {
                 minMaxText._wrapMode = Text::WrapMode::NoWrap;
-                minMaxText.verticallyFlexible = true;
-                minMaxText.horisontallyFlexible = true;
+                minMaxText.wrapTightly = true;
             }
 
         virtual void render(const Window& window, time::Duration delta) override {

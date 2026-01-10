@@ -29,9 +29,7 @@ namespace fc {
             , text(createChild<VerticalCenterer>().createChild<HorisontalCenterer>().createChild<Text>(alignment::ElementAlignment(), textColor, textSize, textRenderer))
         {
             focusable = true;
-            
-            text.verticallyFlexible = true;
-            text.horisontallyFlexible = true;
+            text.wrapTightly = true;
         }
 
         virtual void onMouseMotionEvent(Input& input, input::MouseMotionEvent event) override {

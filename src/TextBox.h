@@ -24,8 +24,7 @@ namespace fc {
 			_text.alignment.setX(alignment::Pixels(0));
 			_text.alignment.setY(alignment::Pixels(0));
 			
-            _text.verticallyFlexible = true;
-            _text.horisontallyFlexible = true;
+            _text.wrapTightly = true;
 		}
 
 		virtual void render(const Window& window, time::Duration delta) override {

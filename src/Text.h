@@ -21,7 +21,8 @@ namespace fc {
         float _textSize;
         WrapMode _wrapMode;
         
-        alignment::AlignmentFunction maxWidth;
+        alignment::AlignmentFunction defaultWidth;
+        alignment::AlignmentFunction defaultHeight;
     private:
         std::string _text;
         // vector<pair<lineText, position relative to self>>
@@ -29,15 +30,9 @@ namespace fc {
     public:
         TextRenderer& _renderer;
 
-        /// Whether the Text will resize vertically to fit the text. 
-        bool verticallyFlexible = false;
-
-        /// Whether the Text will resize horisontally to fit the text. 
-        /// Note! The width will not be greater than that passed in when constructed.  
-        bool horisontallyFlexible = false;
-
+        bool wrapTightly = false;
     public:
-        Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, TextRenderer& textRenderer) : Element(alignment), _textSize(textSize), _renderer(textRenderer), _wrapMode(WrapMode::Wrap), _textColor(textColor), maxWidth(alignment.width) {}
+        Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, TextRenderer& textRenderer) : Element(alignment), _textSize(textSize), _renderer(textRenderer), _wrapMode(WrapMode::Wrap), _textColor(textColor), defaultWidth(alignment.width), defaultHeight(alignment.height) {}
 
         virtual void render(const Window& window, time::Duration delta) override {
             buildLinesCache();
@@ -66,9 +61,11 @@ namespace fc {
         void buildLinesCache() {
             _linesCache.clear();
             const std::string string = _text;
-            const float maxLineWidth = this->maxWidth(parent().getPixelSize().x, parent().getPixelSize().y);
+            const float maxLineWidth = this->defaultWidth(parent().getPixelSize().x, parent().getPixelSize().y);
 			const float lineHeight = _renderer.lineHeight(_textSize);
             
+            bool isWrapped = false;
+
             if (_wrapMode == WrapMode::NoWrap) {
                 _linesCache.push_back({ string, { 0, -lineHeight } });
             } else if (_wrapMode == WrapMode::Wrap) {
@@ -98,12 +95,15 @@ namespace fc {
 
                             charIndex = 0;
                         }
+                        if (isTooWide) {
+                            isWrapped = true;
+                        }
                         charIndex++;
                     }
                 }
             }
             
-            if(horisontallyFlexible) {
+            if(!isWrapped && wrapTightly) {
                 // Find widest line width
                 float widestLineWidth = _renderer.width(std::max_element(_linesCache.begin(), _linesCache.end(),
                     [&](const std::pair<std::string, glm::vec2>& a, const std::pair<std::string, glm::vec2>& b) {
@@ -114,13 +114,17 @@ namespace fc {
                 if(widestLineWidth <= maxLineWidth) {
                     alignment.setWidth(alignment::Pixels(widestLineWidth));
                 } else {
-                    alignment.setWidth(maxWidth); 
+                    alignment.setWidth(defaultWidth); 
                 }
+            } else {
+                alignment.setWidth(defaultWidth);
             }
             
-            if(verticallyFlexible) {
+            if (wrapTightly) {
                 const float height = lineHeight * _linesCache.size() - _renderer.descenderHeight(_textSize);
                 alignment.setHeight(alignment::Pixels(height));
+            } else {
+                alignment.setHeight(defaultHeight);
             }
 
 
