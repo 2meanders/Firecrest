@@ -34,6 +34,7 @@ namespace fc {
             std::cout << "Failed to create window" << std::endl;
             glfwTerminate();
         }
+        input.setWindow(m_Handle);
 
         glfwSetWindowUserPointer(m_Handle, this);
         glfwMakeContextCurrent(m_Handle);
@@ -103,7 +104,7 @@ namespace fc {
     }
 
     void Window::display() {
-        input.update(m_Handle);
+        input.update();
         glfwSwapBuffers(m_Handle);
         glfwPollEvents();
     }

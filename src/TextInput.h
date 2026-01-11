@@ -1,130 +1,190 @@
 #pragma once
 
-#include "TextBox.h"
+#include "Scrollable.h"
 
 namespace fc {
-	class TextInput : public TextBox {
+	class TextInput : public Scrollable {
 	private:
+		Text& text;
 		int32_t _cursorPosition = 0;
 		int cursorBlinkCounter = 0;
 		bool _showCursor = false;
+		ShapeRenderer2D& _renderer;
+		glm::vec4 _backgroundColor;
 	public:
 		TextInput(alignment::ElementAlignment alignment, glm::vec4 backgroundColor, glm::vec4 textColor, float textSize, ShapeRenderer2D& boxRenderer, TextRenderer& textRenderer) :
-			TextBox(alignment, backgroundColor, textColor, textSize, boxRenderer, textRenderer) 
+			Scrollable(alignment, boxRenderer), text(createChild<Text>(alignment, textColor, textSize, textRenderer)), _renderer(boxRenderer), _backgroundColor(backgroundColor)
 		{
 			focusable = true;
-			_text.wrapTightly = false;
+			text.wrapTightly = true;
 		}
 
 		virtual void onLetterTyped(Input& input, input::UnicodeCodePoint letter) override {
-			std::string str = _text.getText();
+			if (static_cast<char>(letter) < 0) return;
+
+			std::string str = text.getText();
 			std::string newStr = str.substr(0, _cursorPosition) + static_cast<char>(letter) + str.substr(_cursorPosition);
-			setText(newStr);
+			text.setText(newStr);
 			_cursorPosition++; 
 		}
 
 		virtual void render(const Window& window, time::Duration delta) override {
-			TextBox::render(window, delta);
+			const glm::vec2 size = getPixelSize();
+			const glm::vec2 pos = getPixelPosition();
+			_renderer.rect(window, pos, size, _backgroundColor);
+			
+			Scrollable::render(window, delta);
+			
 			// Draw cursor
 			const int interval = 60; // Blink every 30 frames
 			if (cursorBlinkCounter % interval < interval / 2 && _showCursor) {
 				const auto pos = cursorPixelPos();
-				const float lineHeight = _text._renderer.lineHeight(_text._textSize);
+				const float lineHeight = text._renderer.lineHeight(text._textSize);
 				const float relY = -0.2f * lineHeight;
-				_background.m_Renderer.rect(window, glm::vec3(pos, 0) + glm::vec3(0, relY, 0), { 3, lineHeight }, _text._textColor);
+				_renderer.rect(window, glm::vec3(pos, 0) + glm::vec3(0, relY - getScrollOffset(), 0), { 3, lineHeight }, text._textColor);
 			}
 			cursorBlinkCounter++;
 		}
 
 		virtual void onKeyboardEvent(Input& input, input::KeyboardEvent event) override {
 			if (event.action == input::KeyAction::Press || event.action == input::KeyAction::Repeat) {
+				cursorBlinkCounter = 0;
+
 				switch (event.key) {
 					case GLFW_KEY_BACKSPACE:
 						if(_cursorPosition == 0) break; 
-						if (!_text.getText().empty()) {
-							std::string str = _text.getText();
+						if (!text.getText().empty()) {
+							std::string str = text.getText();
 							std::string newStr = str.substr(0, _cursorPosition - 1) + str.substr(_cursorPosition);
-							_text.setText(newStr);
+							text.setText(newStr);
 							_cursorPosition--;
 							clampCursor();
 						}
 						break;
 
 					case GLFW_KEY_DELETE:
-						if (!_text.getText().empty() && _cursorPosition < _text.getText().size()) {
-							std::string str = _text.getText();
+						if (!text.getText().empty() && _cursorPosition < text.getText().size()) {
+							std::string str = text.getText();
 							std::string newStr = str.substr(0, _cursorPosition) + str.substr(_cursorPosition + 1);
-							_text.setText(newStr);
+							text.setText(newStr);
 						}
 						break;
 
                     case GLFW_KEY_ENTER: {
-                        std::string str = _text.getText();
+                        std::string str = text.getText();
                         std::string newStr = str.substr(0, _cursorPosition) + '\n' + str.substr(_cursorPosition);
-                        setText(newStr);
+                        text.setText(newStr);
 						_cursorPosition++;
 						clampCursor();
                         break;
                     }
 
-					case GLFW_KEY_LEFT:
-						_cursorPosition--;
-						clampCursor();
-						break;
 
-					case GLFW_KEY_RIGHT:
-						_cursorPosition++;
+					case GLFW_KEY_LEFT: {
+						if (input.keyPressed(GLFW_KEY_LEFT_CONTROL) ||
+							input.keyPressed(GLFW_KEY_RIGHT_CONTROL)) {
+
+							const std::string& s = text.getText();
+
+							if (_cursorPosition > 0) {
+								// Step 2: skip non-whitespace (the word)
+								while (_cursorPosition > 0 &&
+									!std::isspace(static_cast<unsigned char>(s[_cursorPosition - 1]))) {
+									--_cursorPosition;
+								}
+
+								// Step 1: skip whitespace to the left
+								while (_cursorPosition > 0 &&
+									std::isspace(static_cast<unsigned char>(s[_cursorPosition - 1]))) {
+									--_cursorPosition;
+								}
+							}
+						} else {
+							--_cursorPosition;
+						}
+
 						clampCursor();
 						break;
+					}
+
+					case GLFW_KEY_RIGHT: {
+						if (input.keyPressed(GLFW_KEY_LEFT_CONTROL) ||
+							input.keyPressed(GLFW_KEY_RIGHT_CONTROL)) {
+
+							const std::string& s = text.getText();
+							const size_t len = s.size();
+
+							// Step 1: skip non-whitespace (current word)
+							while (_cursorPosition < len &&
+								!std::isspace(static_cast<unsigned char>(s[_cursorPosition]))) {
+								++_cursorPosition;
+							}
+
+							// Step 2: skip whitespace
+							while (_cursorPosition < len &&
+								std::isspace(static_cast<unsigned char>(s[_cursorPosition]))) {
+								++_cursorPosition;
+							}
+						} else {
+							++_cursorPosition;
+						}
+
+						clampCursor();
+						break;
+					}
 
 					case GLFW_KEY_UP: {
-						// Fix: If cursor is at end of text and not after newline, treat as last line
-						if (_cursorPosition == _text.getText().size() && !_text.getText().empty() && _text.getText().back() != U'\n') {
-							// Move cursor to same column in previous line
-							uint32_t line = static_cast<uint32_t>(_text.lines().size() - 1);
-							if (line == 0) break;
-							uint32_t charIndex = static_cast<uint32_t>(_text.lines().back().first.length());
-							uint32_t prevLineLen = static_cast<uint32_t>(_text.lines()[line - 1].first.length());
-							_cursorPosition -= charIndex;
-							if (prevLineLen >= charIndex) {
-								_cursorPosition -= prevLineLen - charIndex;
-							} else {
-								_cursorPosition -= prevLineLen;
-							}
-							clampCursor();
+						const uint32_t currentLine = cursorLineNumber();
+						// First line
+						if(currentLine == 0) {
+							_cursorPosition = 0;
 							break;
 						}
 
-						const uint32_t line = cursorLineNumber();
-						if (line == 0) break;
+						const uint32_t line = currentLine - 1;
 						
-						const uint32_t charIndex = cursorPosOnLine();
-						_cursorPosition -= charIndex;
+						const uint32_t characterOnLine = cursorPosOnLine();
+						const uint32_t lineChars = text.lines()[line].first.size();
 						
-						const std::string& prevLine = _text.lines()[line - 1].first;
-						if(prevLine.length() - 1 /* -1 because of the newline */>= charIndex) {
-							_cursorPosition -= prevLine.length() - charIndex;
-						} else {
-							_cursorPosition--; // For the newline
+						uint32_t charcount = 0;
+						for(int i = 0; i < line; i++) {
+							charcount += text.lines()[i].first.size();		
 						}
-						clampCursor();
+
+						if (lineChars >= characterOnLine) {
+							_cursorPosition = charcount + characterOnLine;
+						} else {
+							_cursorPosition = charcount + lineChars - 1;
+						}
+						
 						break;
 					}
 					
 					case GLFW_KEY_DOWN: {
 						const uint32_t line = cursorLineNumber();
-						if (line >= _text.lines().size() - 1) break;
+						if (line >= text.lines().size() - 1) {
+							_cursorPosition = text.getText().size();
+							clampCursor();
+							break;
+						}
 						
 						const uint32_t charIndex = cursorPosOnLine();
-						_cursorPosition += _text.lines()[line].first.length() - charIndex;
+						_cursorPosition += text.lines()[line].first.length() - charIndex;
 						
-						const std::string& lineUnder = _text.lines()[line + 1].first;
+						const std::string& lineUnder = text.lines()[line + 1].first;
 						if(lineUnder.length() - 1 >= charIndex) {
 							_cursorPosition += charIndex;
 						} else {
 							_cursorPosition += lineUnder.size();
 						}
 						clampCursor();
+						break;
+					}
+
+					case GLFW_KEY_V: {
+						const char* clipboard = input.clipboard();
+						std::string str = text.getText();
+						text.setText(str.substr(0, _cursorPosition) + clipboard + str.substr(_cursorPosition));
 						break;
 					}
 
@@ -144,30 +204,29 @@ namespace fc {
 
 		// Get the line the cursor is currently on
 		uint32_t cursorLineNumber() const {
-			const auto& lines = _text.lines();
+			const auto& lines = text.lines();
 			if(lines.size() <= 1) return 0;
 
-			uint32_t line = 0;
 			uint32_t characterIndex = 0;
 			for (size_t lineNum = 0; lineNum < lines.size(); lineNum++) {
-				const std::string& l = lines[lineNum].first;
-				characterIndex += l.length();
+				const std::string& line = lines[lineNum].first;
+				characterIndex += line.length();
+				
 				if (characterIndex > _cursorPosition) {
-					break;
-				} else if(characterIndex == _cursorPosition && !l.empty() && l.back() == U'\n' && lineNum != lines.size() -1) {
-					line++;
-					break;
+					return lineNum;
 				}
-				line++;
+				if (characterIndex == _cursorPosition) {
+					return lineNum;
+				}
 			}
-			return line;
+			return lines.size() - 1;
 		}
 
 		uint32_t cursorPosOnLine() const {
 			auto line = cursorLineNumber();
 			uint32_t numChars = 0;
 			for (uint32_t i = 0; i < line; i++) {
-				numChars += _text.lines()[i].first.length();
+				numChars += text.lines()[i].first.length();
 			}
 			return _cursorPosition - numChars;
 		}
@@ -177,29 +236,15 @@ namespace fc {
             uint32_t line = cursorLineNumber();
             uint32_t col = cursorPosOnLine();
 
-            const auto& lines = _text.lines();
-            std::string lineText;
-            if (line < lines.size()) {
-                lineText = lines[line].first.substr(0, col);
-            }
-
-            // Fix: If cursor is at the very end of the text and not after a newline, keep it on the last line
-            if (line >= lines.size() && !_text.getText().empty()) {
-                // Only move to imaginary line if the last character is a newline
-                if (_text.getText().back() != U'\n') {
-                    line = static_cast<uint32_t>(lines.size() - 1);
-                    col = static_cast<uint32_t>(lines.back().first.length());
-                    lineText = lines.back().first;
-                }
-            }
+			const auto lineText = text.lines()[line].first.substr(0, col);
 
             const glm::vec2 pos = getPixelPosition();
 
             // Calculate X: width of text before cursor on this line
-            const float x = pos.x + _text._renderer.width(lineText, _text._textSize);
+            const float x = pos.x + text._renderer.width(lineText, text._textSize);
 
             // Calculate Y: top + line * lineHeight
-            const float lineHeight = _text._renderer.lineHeight(_text._textSize);
+            const float lineHeight = text._renderer.lineHeight(text._textSize);
             const float y = pos.y + getPixelSize().y - (line + 1) * lineHeight;
 
             return glm::vec2(x, y);
@@ -208,9 +253,13 @@ namespace fc {
 		void clampCursor() {
 			if(_cursorPosition < 0) {
 				_cursorPosition = 0;
-			} else if(_cursorPosition > _text.getText().length()) {
-				_cursorPosition = _text.getText().length();
+			} else if(_cursorPosition > text.getText().length()) {
+				_cursorPosition = text.getText().length();
 			}
+		}
+
+		void setText(const std::string& text) {
+			this->text.setText(text);
 		}
 	};
 }

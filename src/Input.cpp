@@ -81,7 +81,7 @@ namespace fc {
 		for (bool& key : keysReleased) key = false;
 	}
 
-	void Input::update(GLFWwindow* window) {
+	void Input::update() {
 		_lastMouse = _currMouse;
 
 		for(bool& button : mouseButtonsJustPressed)
@@ -123,5 +123,13 @@ namespace fc {
 			}
 		}	
 		_recentMouseButtonEvents.clear();
+	}
+
+	const char* Input::clipboard() const {
+		return glfwGetClipboardString(window);
+	}
+
+	void Input::setClipboard(const std::string& str) {
+		glfwSetClipboardString(window, str.c_str());
 	}
 }

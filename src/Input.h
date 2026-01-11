@@ -18,6 +18,11 @@ namespace fc {
 		using KeyEventCallback = std::function<void(input::RawKeyboardEvent)>;
 		using CharEventCallback = std::function<void(input::UnicodeCodePoint)>;
 	private:
+		GLFWwindow* window = nullptr;
+		void setWindow(GLFWwindow* window) {
+			this->window = window;
+		}
+
 		glm::vec2 _currMouse;
 		glm::vec2 _lastMouse;
 		bool mouseButtons[GLFW_MOUSE_BUTTON_LAST];
@@ -46,7 +51,7 @@ namespace fc {
 	public:
 		Input();
 
-		void update(GLFWwindow* window);
+		void update();
 		
 		inline glm::vec2 mouse() const { return _currMouse; }
 		inline glm::vec2 lastMouse() const { return _lastMouse; }
@@ -83,7 +88,10 @@ namespace fc {
 		[[nodiscard]]
 		fiv::ID subscribeScrollEvent(ScrollCallback callback) { return _scrollEventCallbacks.push(callback); }
 		void unsubscribeScrollEvent(fiv::ID id) { _scrollEventCallbacks.remove(id); }
-		
+	
+		const char* clipboard() const;
+		void setClipboard(const std::string& str);
+
 		friend class Window;
 	};
 

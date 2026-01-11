@@ -23,7 +23,7 @@ int main() {
 	ShapeRenderer2D& shapeRenderer = display.createRenderer<ShapeRenderer2D>();
 	TextRenderer textRenderer(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
 	
-	auto& v1 = display.createChild<Scrollable>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)), shapeRenderer);
+	auto& v1 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)));
 	auto& v2 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
 	auto& v3 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)));
 	auto& v4 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
@@ -33,11 +33,10 @@ int main() {
 		alignment::ElementAlignment()
 		, glm::vec4(1, 1, 1, 1)
 		, glm::vec4(0.1, 0.1, 0.1, 1)
-		, 60.0f
+		, 24.0f
 		, shapeRenderer
 		, textRenderer
 	);
-	textInput._text.wrapTightly = true;
 	textInput.setText("This is a text input field. Try it!");
 	
 	

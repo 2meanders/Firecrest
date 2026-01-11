@@ -92,5 +92,9 @@ namespace fc {
 			}
 			return totalHeight - _flexElement.getPixelSize().y;
 		}
+
+		float getScrollOffset() const {
+			return _verticalScrollOffset;
+		}
 	};
 }
