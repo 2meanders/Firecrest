@@ -27,6 +27,8 @@ namespace fc {
         std::string _text;
         // vector<pair<lineText, position relative to self>>
         std::vector<std::pair<std::string, glm::vec2>> _linesCache;
+
+        glm::vec2 _lastParentSize = { -1, -1 };
     public:
         TextRenderer& _renderer;
 
@@ -35,7 +37,11 @@ namespace fc {
         Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, TextRenderer& textRenderer) : Element(alignment), _textSize(textSize), _renderer(textRenderer), _wrapMode(WrapMode::Wrap), _textColor(textColor), defaultWidth(alignment.width), defaultHeight(alignment.height) {}
 
         virtual void render(const Window& window, time::Duration delta) override {
-            buildLinesCache();
+            const glm::vec2 parentSize = parent().getPixelSize();
+            if (parentSize != _lastParentSize) {
+                buildLinesCache();
+                _lastParentSize = parentSize;
+            } 
             if (_text.empty()) return;
 
             gl::RenderRegion::push(getPixelRectangle(), gl::RenderRegion::Mode::Scissor);
