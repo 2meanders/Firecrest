@@ -34,7 +34,7 @@ namespace fc {
         std::string _lastText;
 
     public:
-        Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, TextRenderer& textRenderer) : Element(alignment), textSize(textSize), renderer(textRenderer), color(textColor), defaultWidth(alignment.width), defaultHeight(alignment.height) {}
+        Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, const std::string& text, TextRenderer& textRenderer) : Element(alignment), textSize(textSize), renderer(textRenderer), color(textColor), defaultWidth(alignment.width), defaultHeight(alignment.height), text(text) {}
 
         virtual void render(const Window& window, time::Duration delta) override {
             bool shouldRebuild = false;

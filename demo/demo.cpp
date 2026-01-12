@@ -34,11 +34,10 @@ int main() {
 		, glm::vec4(1, 1, 1, 1)
 		, glm::vec4(0.1, 0.1, 0.1, 1)
 		, 24.0f
+		, "This is a text input field. Try it!"
 		, shapeRenderer
 		, textRenderer
 	);
-	textInput.text.text = "This is a text input field. Try it!";
-	
 	
 	auto& graph = v2.createChild<Graph>(alignment::ElementAlignment(), shapeRenderer, textRenderer, 16.0f);
 	std::vector<glm::vec2> graphData;
@@ -105,14 +104,14 @@ void main()
 		glm::vec4(0.8, 0, 0, 1), 
 		glm::vec4(0.5, 0, 0, 1), 
 		glm::vec4(1, 1, 1, 1), 
-		16.0f, 
+		16.0f,
+		"Press me!", 
 		[]() { 
 			std::cout << "Pressed! Callback called" << std::endl; 
 		},
 		shapeRenderer, 
 		textRenderer
 	);
-	button.text.text = "Press me!";
 
 	time::Moment lastTime = time::now();
 	while (!window.shouldClose()) {

@@ -13,11 +13,11 @@ namespace fc {
 		ShapeRenderer2D& _renderer;
 		glm::vec4 _backgroundColor;
 	public:
-		TextInput(alignment::ElementAlignment alignment, glm::vec4 backgroundColor, glm::vec4 textColor, float textSize, ShapeRenderer2D& boxRenderer, TextRenderer& textRenderer) :
-			Scrollable(alignment, boxRenderer), text(createChild<Text>(alignment, textColor, textSize, textRenderer)), _renderer(boxRenderer), _backgroundColor(backgroundColor)
+		TextInput(alignment::ElementAlignment alignment, glm::vec4 backgroundColor, glm::vec4 textColor, float textSize, const std::string& text, ShapeRenderer2D& boxRenderer, TextRenderer& textRenderer) :
+			Scrollable(alignment, boxRenderer), text(createChild<Text>(alignment, textColor, textSize, text, textRenderer)), _renderer(boxRenderer), _backgroundColor(backgroundColor)
 		{
 			focusable = true;
-			text.wrapTightly = true;
+			this->text.wrapTightly = true;
 		}
 
 		virtual void onLetterTyped(Input& input, input::UnicodeCodePoint letter) override {

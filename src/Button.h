@@ -19,17 +19,17 @@ namespace fc {
         RoundedColoredRect& background;
         Text& text;
     public:
-        Button(alignment::ElementAlignment alignment, glm::vec4 color, glm::vec4 hoverColor, glm::vec4 clickColor, glm::vec4 textColor, float textSize, Callback onClickCallback, ShapeRenderer2D& shapeRenderer, TextRenderer& textRenderer)
+        Button(alignment::ElementAlignment alignment, glm::vec4 color, glm::vec4 hoverColor, glm::vec4 clickColor, glm::vec4 textColor, float textSize, const std::string& text, Callback onClickCallback, ShapeRenderer2D& shapeRenderer, TextRenderer& textRenderer)
             : Container(alignment)
             , color(color)
             , hoverColor(hoverColor)
             , clickColor(clickColor)
             , onClickCallback(onClickCallback)
             , background(createChild<RoundedColoredRect>(alignment::ElementAlignment(), color, 15.0f, shapeRenderer))
-            , text(createChild<VerticalCenterer>().createChild<HorisontalCenterer>().createChild<Text>(alignment::ElementAlignment(), textColor, textSize, textRenderer))
+            , text(createChild<VerticalCenterer>().createChild<HorisontalCenterer>().createChild<Text>(alignment::ElementAlignment(), textColor, textSize, text, textRenderer))
         {
             focusable = true;
-            text.wrapTightly = true;
+            this->text.wrapTightly = true;
         }
 
         virtual void onMouseMotionEvent(Input& input, input::MouseMotionEvent event) override {

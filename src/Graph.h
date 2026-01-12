@@ -32,6 +32,7 @@ namespace fc {
                     alignment::ElementAlignment()
                     , glm::vec4(1, 1, 1, 1)
                     , textSize
+                    , "Min: N/A Max: N/A"
                     , textRenderer
                 )) 
             {
