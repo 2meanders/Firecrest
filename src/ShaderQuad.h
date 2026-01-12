@@ -11,7 +11,7 @@
 namespace fc {
     class ShaderQuad : public Element {
     public:
-        gl::Shader m_Shader;
+        gl::Shader shader;
 
         std::function<void(gl::Shader&)> beforeRender;
     private:
@@ -45,9 +45,9 @@ namespace fc {
                 }
             )";
 
-            m_Shader.addStageSource(GL_VERTEX_SHADER, vertexShader);
-            m_Shader.addStageSource(GL_FRAGMENT_SHADER, shaderCode);
-            m_Shader.link();
+            shader.addStageSource(GL_VERTEX_SHADER, vertexShader);
+            shader.addStageSource(GL_FRAGMENT_SHADER, shaderCode);
+            shader.link();
 
             m_VAO.bind();
 
@@ -86,19 +86,19 @@ namespace fc {
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
 		    
-            m_Shader.bind();
+            shader.bind();
 
             if (beforeRender) {
-                beforeRender(m_Shader);
+                beforeRender(shader);
             }
 
             glm::mat4 projection = window.orthographicProjection();
-            m_Shader.setUniformMat4f("projection", projection);
+            shader.setUniformMat4f("projection", projection);
 
             glm::mat4 transform = glm::mat4(1.0f);
             transform = glm::translate(transform, glm::vec3(getPixelPosition(), 0.0f));
             transform = glm::scale(transform, glm::vec3(getPixelSize(), 1.0f));
-            m_Shader.setUniformMat4f("transform", transform);
+            shader.setUniformMat4f("transform", transform);
 
             m_VAO.bind();
             m_IBO.bind();

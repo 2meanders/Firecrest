@@ -35,10 +35,10 @@ namespace fc {
         virtual void onMouseMotionEvent(Input& input, input::MouseMotionEvent event) override {
             switch(event.action) {
             case input::MouseMotionAction::Enter:
-                background.m_Color = hoverColor;
+                background.color = hoverColor;
                 break;
             case input::MouseMotionAction::Exit:
-                background.m_Color = color;
+                background.color = color;
                 break;
             };
         }
@@ -47,11 +47,11 @@ namespace fc {
             if(event.button == input::MouseButton::Left) {
                 switch(event.action) {
                 case input::MouseButtonAction::Press:
-                    background.m_Color = clickColor;
+                    background.color = clickColor;
                     onClickCallback();
                     break;
                 case input::MouseButtonAction::Up:
-                    background.m_Color = hoverColor;
+                    background.color = hoverColor;
                     break;
                 }
             }

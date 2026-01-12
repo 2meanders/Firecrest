@@ -35,10 +35,10 @@ namespace fc {
         bool unlockMouse();
     
     protected:
-        Container* m_Parent;
+        Container* _parent;
     
-        const Container& parent() const { return *m_Parent; }
-        Container& parent() { return *m_Parent; }
+        const Container& parent() const { return *_parent; }
+        Container& parent() { return *_parent; }
 
         // Whether this element can be focused or not.
         bool focusable;

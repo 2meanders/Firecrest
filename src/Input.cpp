@@ -73,41 +73,41 @@ namespace fc {
 		}
     }
 
-    Input::Input() : mouseButtons(), mouseButtonsReleased(), mouseButtonsJustPressed(), _currMouse({-1, -1}), _lastMouse({-1, -1}), keys(), keysReleased(), keysJustPressed() {
-		for (bool& button : mouseButtons) button = false;
-		for (bool& button : mouseButtonsReleased) button = false;
-		for (bool& button : mouseButtonsJustPressed) button = false;
-		for (bool& key : keys) key = false;
-		for (bool& key : keysReleased) key = false;
+    Input::Input() : _mouseButtons(), _mouseButtonsReleased(), _mouseButtonsJustPressed(), _currMouse({-1, -1}), _lastMouse({-1, -1}), _keys(), _keysReleased(), _keysJustPressed() {
+		for (bool& button : _mouseButtons) button = false;
+		for (bool& button : _mouseButtonsReleased) button = false;
+		for (bool& button : _mouseButtonsJustPressed) button = false;
+		for (bool& key : _keys) key = false;
+		for (bool& key : _keysReleased) key = false;
 	}
 
 	void Input::update() {
 		_lastMouse = _currMouse;
 
-		for(bool& button : mouseButtonsJustPressed)
+		for(bool& button : _mouseButtonsJustPressed)
 			button = false;
-		for(bool& button : mouseButtonsReleased)
+		for(bool& button : _mouseButtonsReleased)
 			button = false;
-		for(bool& key : keysJustPressed)
+		for(bool& key : _keysJustPressed)
 			key = false;
-		for(bool& key : keysReleased)
+		for(bool& key : _keysReleased)
 			key = false;
 
-		typedCharacters = _recentCharacterEvents;
+		_typedCharacters = _recentCharacterEvents;
 		_recentCharacterEvents.clear();
 
 		for(auto& e : _recentKeyEvents) {
 			switch(e.action) {
 			case input::RawKeyAction::Press:
-				keys[e.key] = true;
-				keysJustPressed[e.key] = true;
+				_keys[e.key] = true;
+				_keysJustPressed[e.key] = true;
 				break;
 			case input::RawKeyAction::Repeat:
-				keys[e.key] = true;
+				_keys[e.key] = true;
 				break;
 			case input::RawKeyAction::Up:
-				keys[e.key] = false;
-				keysReleased[e.key] = true;
+				_keys[e.key] = false;
+				_keysReleased[e.key] = true;
 			}
 		}
 		_recentKeyEvents.clear();
@@ -115,21 +115,21 @@ namespace fc {
 		for(auto& e : _recentMouseButtonEvents) {
 			switch(e.action) {
 			case input::RawMouseButtonAction::Press:
-				mouseButtons[static_cast<int>(e.button)] = true;
-				mouseButtonsJustPressed[static_cast<int>(e.button)] = true;
+				_mouseButtons[static_cast<int>(e.button)] = true;
+				_mouseButtonsJustPressed[static_cast<int>(e.button)] = true;
 			case input::RawMouseButtonAction::Up:
-				mouseButtons[static_cast<int>(e.button)] = false;
-				mouseButtonsReleased[static_cast<int>(e.button)] = true;
+				_mouseButtons[static_cast<int>(e.button)] = false;
+				_mouseButtonsReleased[static_cast<int>(e.button)] = true;
 			}
 		}	
 		_recentMouseButtonEvents.clear();
 	}
 
 	const char* Input::clipboard() const {
-		return glfwGetClipboardString(window);
+		return glfwGetClipboardString(_window);
 	}
 
 	void Input::setClipboard(const std::string& str) {
-		glfwSetClipboardString(window, str.c_str());
+		glfwSetClipboardString(_window, str.c_str());
 	}
 }

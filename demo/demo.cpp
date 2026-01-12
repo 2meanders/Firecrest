@@ -37,7 +37,7 @@ int main() {
 		, shapeRenderer
 		, textRenderer
 	);
-	textInput.setText("This is a text input field. Try it!");
+	textInput.text.text = "This is a text input field. Try it!";
 	
 	
 	auto& graph = v2.createChild<Graph>(alignment::ElementAlignment(), shapeRenderer, textRenderer, 16.0f);
@@ -112,7 +112,7 @@ void main()
 		shapeRenderer, 
 		textRenderer
 	);
-	button.text.setText("Press me!");
+	button.text.text = "Press me!";
 
 	time::Moment lastTime = time::now();
 	while (!window.shouldClose()) {

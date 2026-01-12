@@ -20,9 +20,9 @@ namespace fc {
 
 	class Window {
 	private:
-		GLFWwindow* m_Handle;
-		Input input;
-		glm::vec4 m_ClearColor;
+		GLFWwindow* _handle;
+		Input _input;
+		glm::vec4 _clearColor;
 	public:
 		Window(WindowProperties& properties);
 		~Window();
@@ -42,10 +42,10 @@ namespace fc {
 		void clearColor(glm::vec4 color);
 		void clearScreen() const;
 
-		inline const GLFWwindow* const handle() const { return m_Handle; }
-		inline GLFWwindow* handle() { return m_Handle; }
-		inline const Input& getInput() const { return input; }
-		inline Input& getInput() { return input; }
+		inline const GLFWwindow* const handle() const { return _handle; }
+		inline GLFWwindow* handle() { return _handle; }
+		inline const Input& getInput() const { return _input; }
+		inline Input& getInput() { return _input; }
 		int width() const;
 		int height() const;
 		glm::ivec2 dimensions() const;

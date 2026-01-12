@@ -9,11 +9,11 @@ namespace fc {
             LeftToRight,
             RightToLeft,
         };
-        Direction m_Direction;
+        Direction direction;
 
-        float m_Spacing;
+        float spacing;
 
-        HorisontalPositioning(alignment::ElementAlignment alignment) : Container(alignment), m_Spacing(0.0f), m_Direction(Direction::LeftToRight) {}
+        HorisontalPositioning(alignment::ElementAlignment alignment) : Container(alignment), spacing(0.0f), direction(Direction::LeftToRight) {}
         
         void childCreated(fiv::ID id) override {
 			children()[id]->alignment.x = alignment::AlignmentFunction(
@@ -22,10 +22,10 @@ namespace fc {
 					auto index = children().indexOf(id);
 					for (size_t i = 0; i < index; i++) {
 						const float childWidth = children().dataAt(i)->getPixelSize().x;
-						xOffset += childWidth + (childWidth > 0 ? m_Spacing : 0);
+						xOffset += childWidth + (childWidth > 0 ? spacing : 0);
 					}
 
-					if (m_Direction == Direction::LeftToRight) {
+					if (direction == Direction::LeftToRight) {
 						return xOffset;
 					} else {
 						return parent1 - xOffset - children()[id]->getPixelSize().x;

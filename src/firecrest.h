@@ -21,6 +21,7 @@
 #include "core/Rectangle.h"
 #include "core/StringUtils.h"
 #include "core/Time.h"
+#include "core/Tracked.h"
 #include "Display.h"
 #include "Element.h"
 #include "FreeCamera.h"

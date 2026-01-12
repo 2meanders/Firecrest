@@ -18,22 +18,22 @@ namespace fc {
 		using KeyEventCallback = std::function<void(input::RawKeyboardEvent)>;
 		using CharEventCallback = std::function<void(input::UnicodeCodePoint)>;
 	private:
-		GLFWwindow* window = nullptr;
+		GLFWwindow* _window = nullptr;
 		void setWindow(GLFWwindow* window) {
-			this->window = window;
+			this->_window = window;
 		}
 
 		glm::vec2 _currMouse;
 		glm::vec2 _lastMouse;
-		bool mouseButtons[GLFW_MOUSE_BUTTON_LAST];
-		bool mouseButtonsReleased[GLFW_MOUSE_BUTTON_LAST];
-		bool mouseButtonsJustPressed[GLFW_MOUSE_BUTTON_LAST];
+		bool _mouseButtons[GLFW_MOUSE_BUTTON_LAST];
+		bool _mouseButtonsReleased[GLFW_MOUSE_BUTTON_LAST];
+		bool _mouseButtonsJustPressed[GLFW_MOUSE_BUTTON_LAST];
 
-		bool keys[GLFW_KEY_LAST];
-		bool keysReleased[GLFW_KEY_LAST];
-		bool keysJustPressed[GLFW_KEY_LAST];
+		bool _keys[GLFW_KEY_LAST];
+		bool _keysReleased[GLFW_KEY_LAST];
+		bool _keysJustPressed[GLFW_KEY_LAST];
 
-		std::vector<input::UnicodeCodePoint> typedCharacters;
+		std::vector<input::UnicodeCodePoint> _typedCharacters;
 	private:
 		std::vector<input::UnicodeCodePoint> _recentCharacterEvents;
 		std::vector<input::RawKeyboardEvent> _recentKeyEvents;
@@ -58,15 +58,15 @@ namespace fc {
 		inline glm::vec2 deltaMouse() const { return _currMouse - _lastMouse; }
 		inline bool mouseMoved() const { return _currMouse != _lastMouse; }
 
-		inline bool mouseIsPressed(int button) const { return mouseButtons[button]; }
-		inline bool mouseReleased(int button) const { return mouseButtonsReleased[button]; }
-		inline bool mouseJustPressed(int button) const { return mouseButtonsJustPressed[button]; }
+		inline bool mouseIsPressed(int button) const { return _mouseButtons[button]; }
+		inline bool mouseReleased(int button) const { return _mouseButtonsReleased[button]; }
+		inline bool mouseJustPressed(int button) const { return _mouseButtonsJustPressed[button]; }
 
-		inline bool keyPressed(int key) const { return keys[key]; }
-		inline bool keyJustPressed(int key) const { return keysJustPressed[key]; }
-		inline bool keyReleased(int key) const { return keysReleased[key]; }
+		inline bool keyPressed(int key) const { return _keys[key]; }
+		inline bool keyJustPressed(int key) const { return _keysJustPressed[key]; }
+		inline bool keyReleased(int key) const { return _keysReleased[key]; }
 
-		inline const std::vector<input::UnicodeCodePoint>& charactersTyped() const { return typedCharacters; }
+		inline const std::vector<input::UnicodeCodePoint>& charactersTyped() const { return _typedCharacters; }
 
 		
 		[[nodiscard]]

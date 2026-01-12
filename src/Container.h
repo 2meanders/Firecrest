@@ -9,33 +9,33 @@ namespace fc {
     // An element that can contain other elements.
     class Container : public Element {
     private:
-        fiv::Vector<std::unique_ptr<Element>> m_Children;
+        fiv::Vector<std::unique_ptr<Element>> _children;
     protected:
 		// This function is called immediately after a child is created.
 		virtual void childCreated(fiv::ID id) {}
     public:
-        Container(alignment::ElementAlignment alignment) : Element(alignment), m_Children(true) {}
+        Container(alignment::ElementAlignment alignment) : Element(alignment), _children(true) {}
         
         template<typename T, typename... Args>
         T& createChild(Args&&... args) {
             static_assert(std::is_base_of<Element, T>::value, "T must derive from Element");
-            fiv::ID id = m_Children.emplace(std::make_unique<T>(std::forward<Args>(args)...));
-            m_Children[id]->m_Parent = this;
+            fiv::ID id = _children.emplace(std::make_unique<T>(std::forward<Args>(args)...));
+            _children[id]->_parent = this;
             childCreated(id);
-            return static_cast<T&>(*m_Children[id]);
+            return static_cast<T&>(*_children[id]);
         }
 
         template<typename T, typename... Args>
         std::pair<T&, fiv::ID> createIDedChild(Args&&... args) {
             static_assert(std::is_base_of<Element, T>::value, "T must derive from Element");
-            fiv::ID id = m_Children.emplace(std::make_unique<T>(std::forward<Args>(args)...));
-            m_Children[id]->m_Parent = this;
+            fiv::ID id = _children.emplace(std::make_unique<T>(std::forward<Args>(args)...));
+            _children[id]->_parent = this;
             childCreated(id);
-            return { static_cast<T&>(*m_Children[id]), id };
+            return { static_cast<T&>(*_children[id]), id };
         }
         
         const fiv::Vector<std::unique_ptr<Element>>& children() const {
-            return m_Children;
+            return _children;
         }
 
         virtual void render(const Window& window, time::Duration delta) override {
@@ -85,7 +85,7 @@ namespace fc {
         }
 
         virtual Element* findFocusedElement(glm::vec2 mousePosition) override {
-            for (auto& child : m_Children) {
+            for (auto& child : _children) {
                 Rectangle childRect = child->getPixelRectangle();
                 if (childRect.contains(mousePosition)) {
                     Element* focusedChild = child->findFocusedElement(mousePosition);
@@ -99,7 +99,7 @@ namespace fc {
 
         virtual int32_t maxDepth() const override {
             int32_t depth = calculateDepth();
-            for(const auto& child : m_Children) {
+            for(const auto& child : _children) {
                 depth = std::min(depth, child->maxDepth());
 			}
 			return depth;

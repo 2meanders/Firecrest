@@ -13,7 +13,7 @@ namespace fc {
 		float _verticalScrollOffset = 0.0f;
 		Element& _flexElement;
 		ShapeRenderer2D& _renderer;
-		bool stickingToBottom = false; // Whether we are currently sticking to the bottom
+		bool _stickingToBottom = false; // Whether we are currently sticking to the bottom
 	public:
 		float scrollSpeed = 40.0f;
 		bool clampScroll = true; // If true, the scroll will be clamped to the content height
@@ -24,7 +24,7 @@ namespace fc {
 			_renderer(renderer) {}
 	
 		virtual void render(const Window& window, time::Duration delta) override {
-			if(stickingToBottom) {
+			if(_stickingToBottom) {
 				goToBottom();
 			}
 
@@ -55,11 +55,11 @@ namespace fc {
 		void scroll(float pixels) {
 			_verticalScrollOffset += pixels * scrollSpeed;
 			
-			if (stickingToBottom && pixels > 0) {
-				stickingToBottom = false;
+			if (_stickingToBottom && pixels > 0) {
+				_stickingToBottom = false;
 			}
-			else if (!stickingToBottom && getPixelSize().y - contentHeight() >= _verticalScrollOffset) {
-				stickingToBottom = true;
+			else if (!_stickingToBottom && getPixelSize().y - contentHeight() >= _verticalScrollOffset) {
+				_stickingToBottom = true;
 			}
 
 			if (clampScroll) {

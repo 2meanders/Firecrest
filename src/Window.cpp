@@ -29,48 +29,48 @@ namespace fc {
 
 
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Do not show the window until configuration is done
-        m_Handle = glfwCreateWindow(properties.width, properties.height, properties.title.c_str(), NULL, NULL);
-        if (!m_Handle) {
+        _handle = glfwCreateWindow(properties.width, properties.height, properties.title.c_str(), NULL, NULL);
+        if (!_handle) {
             std::cout << "Failed to create window" << std::endl;
             glfwTerminate();
         }
-        input.setWindow(m_Handle);
+        _input.setWindow(_handle);
 
-        glfwSetWindowUserPointer(m_Handle, this);
-        glfwMakeContextCurrent(m_Handle);
+        glfwSetWindowUserPointer(_handle, this);
+        glfwMakeContextCurrent(_handle);
 
         if (properties.vsync)
             glfwSwapInterval(1);
 
         if (properties.maximized)
-            glfwMaximizeWindow(m_Handle);
+            glfwMaximizeWindow(_handle);
 
-        glfwSetCharCallback(m_Handle, [](GLFWwindow* window, unsigned int codepoint) {  
+        glfwSetCharCallback(_handle, [](GLFWwindow* window, unsigned int codepoint) {  
             Window* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));  
-            windowObj->input.characterCallback(window, codepoint);  
+            windowObj->_input.characterCallback(window, codepoint);  
         });
 
-        glfwSetKeyCallback(m_Handle, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        glfwSetKeyCallback(_handle, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
             Window* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));
-            windowObj->input.keyCallback(window, key, scancode, action, mods);
+            windowObj->_input.keyCallback(window, key, scancode, action, mods);
         });
 
-        glfwSetCursorPosCallback(m_Handle, [](GLFWwindow* window, double xpos, double ypos) {
+        glfwSetCursorPosCallback(_handle, [](GLFWwindow* window, double xpos, double ypos) {
             Window* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));
-            windowObj->input.mousePosCallback(window, xpos, ypos);
+            windowObj->_input.mousePosCallback(window, xpos, ypos);
         });
 
-        glfwSetMouseButtonCallback(m_Handle, [](GLFWwindow* window, int button, int action, int mods) {
+        glfwSetMouseButtonCallback(_handle, [](GLFWwindow* window, int button, int action, int mods) {
             Window* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));
-            windowObj->input.mouseButtonCallback(window, button, action, mods);
+            windowObj->_input.mouseButtonCallback(window, button, action, mods);
         });
         
-        glfwSetScrollCallback(m_Handle, [](GLFWwindow* window, double xoffset, double yoffset) {
+        glfwSetScrollCallback(_handle, [](GLFWwindow* window, double xoffset, double yoffset) {
             Window* windowObj = static_cast<Window*>(glfwGetWindowUserPointer(window));
-            windowObj->input.scrollCallback(window, xoffset, yoffset);
+            windowObj->_input.scrollCallback(window, xoffset, yoffset);
         });
 
-        glfwShowWindow(m_Handle);
+        glfwShowWindow(_handle);
 
         if (!gladLoadGL()) {
             std::cout << "Failed to initialize OpenGL context" << std::endl;
@@ -78,9 +78,9 @@ namespace fc {
         }
 
 
-        glfwSetWindowSizeCallback(m_Handle, sizeCallback);
-        glfwSetWindowIconifyCallback(m_Handle, iconifyCallback);
-        glfwSetWindowMaximizeCallback(m_Handle, maximizeCallback);
+        glfwSetWindowSizeCallback(_handle, sizeCallback);
+        glfwSetWindowIconifyCallback(_handle, iconifyCallback);
+        glfwSetWindowMaximizeCallback(_handle, maximizeCallback);
 
         if (properties.antialiasing) {
             glEnable(GL_MULTISAMPLE);
@@ -100,64 +100,64 @@ namespace fc {
     }
 
     Window::~Window() {
-        glfwDestroyWindow(m_Handle);
+        glfwDestroyWindow(_handle);
     }
 
     void Window::display() {
-        input.update();
-        glfwSwapBuffers(m_Handle);
+        _input.update();
+        glfwSwapBuffers(_handle);
         glfwPollEvents();
     }
 
     bool Window::shouldClose() const {
-        return glfwWindowShouldClose(m_Handle);
+        return glfwWindowShouldClose(_handle);
     }
 
     void Window::setTitle(const std::string& title) {
-        glfwSetWindowTitle(m_Handle, title.c_str());
+        glfwSetWindowTitle(_handle, title.c_str());
     }
 
     void Window::lockMouse() {
-        glfwSetInputMode(m_Handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(_handle, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
     void Window::freeMouse() {
-        glfwSetInputMode(m_Handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(_handle, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     bool Window::isMouseLocked() const{
-        return glfwGetInputMode(m_Handle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+        return glfwGetInputMode(_handle, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
     }
 
     bool Window::isMouseFree() const {
-        return glfwGetInputMode(m_Handle, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
+        return glfwGetInputMode(_handle, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
     }
 
     void Window::clearScreen() const {
-        glClearColor(m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w);
+        glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     void Window::clearColor(glm::vec4 color) {
         glClearColor(color.x, color.y, color.z, color.w);
-        m_ClearColor = color;
+        _clearColor = color;
     }
 
     int Window::width() const {
         int width, height;
-        glfwGetWindowSize(m_Handle, &width, &height);
+        glfwGetWindowSize(_handle, &width, &height);
         return width;
     }
 
     int Window::height() const {
         int width, height;
-        glfwGetWindowSize(m_Handle, &width, &height);
+        glfwGetWindowSize(_handle, &width, &height);
         return height;
     }
 
     glm::ivec2 Window::dimensions() const {
         int width, height;
-        glfwGetWindowSize(m_Handle, &width, &height);
+        glfwGetWindowSize(_handle, &width, &height);
         return { width, height };
     }
 

@@ -14,7 +14,7 @@ namespace fc {
 
         float _yMin = 0;
         float _yMax = 0;
-        bool fixedBounds = false;
+        bool _fixedBounds = false;
     public:
         // The data vector should have x-values in ascending order
         std::vector<glm::vec2> data;
@@ -27,12 +27,12 @@ namespace fc {
 
         // If min == max, the bounds are set to not be fixed.
         PlainGraph& setYBounds(float min, float max) {
-            fixedBounds = true;
+            _fixedBounds = true;
             _yMin = min;
             _yMax = max;
 
             if(min == max) {
-                fixedBounds = false;
+                _fixedBounds = false;
             }
 
             return *this;
@@ -46,7 +46,7 @@ namespace fc {
             
             float dataMinY = _yMin;
             float dataMaxY = _yMax;
-            if(!fixedBounds) {
+            if(!_fixedBounds) {
                 dataMinY = std::min_element(data.begin(), data.end(), [](auto a, auto b) { return a.y < b.y; })->y;
                 dataMaxY = std::max_element(data.begin(), data.end(), [](auto a, auto b) { return a.y < b.y; })->y;
             }

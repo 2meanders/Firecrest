@@ -11,15 +11,15 @@ namespace fc {
 			TopToBottom,
 			BottomToTop
 		};
-		Direction m_Direction;
+		Direction direction;
 
-		float m_Spacing;
+		float spacing;
 
-		VerticalPositioning(alignment::ElementAlignment alignment, Direction direction) : Container(alignment), m_Direction(direction), m_Spacing(0.0f) {}
+		VerticalPositioning(alignment::ElementAlignment alignment, Direction direction) : Container(alignment), direction(direction), spacing(0.0f) {}
 		VerticalPositioning(alignment::ElementAlignment alignment) : VerticalPositioning(alignment, Direction::TopToBottom) {}
 
 		void setSpacing(float spacing) {
-			m_Spacing = spacing;
+			spacing = spacing;
 		}
 
 		void childCreated(fiv::ID id) override {
@@ -29,10 +29,10 @@ namespace fc {
 					auto index = children().indexOf(id);
 					for (size_t i = 0; i < index; i++) {
 						float childHeight = children().dataAt(i)->getPixelSize().y;
-						yOffset += childHeight + (childHeight > 0 ? m_Spacing : 0);
+						yOffset += childHeight + (childHeight > 0 ? spacing : 0);
 					}
 
-					if (m_Direction == Direction::BottomToTop) {
+					if (direction == Direction::BottomToTop) {
 						return yOffset;
 					} else {
 						return parent1 - yOffset - children()[id]->getPixelSize().y;

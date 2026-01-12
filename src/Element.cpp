@@ -3,7 +3,7 @@
 
 fc::Element::Element(alignment::ElementAlignment alignment) 
     : alignment(alignment)
-    , m_Parent(nullptr)
+    , _parent(nullptr)
     , _hasFocus(false) 
     , focusable(false)
 {}
@@ -21,7 +21,7 @@ fc::Rectangle fc::Element::getPixelRectangle() const {
 }
 
 void fc::Element::unFocus() {
-    m_Parent->unFocus();
+    _parent->unFocus();
 }
 
 int32_t fc::Element::calculateDepth() const {

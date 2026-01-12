@@ -6,16 +6,16 @@ namespace fc {
 
 	class RoundedColoredRect : public Element {
 	public:
-		glm::vec4 m_Color;
-		float m_Radius;
-		ShapeRenderer2D& m_Renderer;
-		uint32_t m_Quality;
+		glm::vec4 color;
+		float radius;
+		ShapeRenderer2D& renderer;
+		uint32_t quality;
 	public:
-		RoundedColoredRect(alignment::ElementAlignment alignment, glm::vec4 color, float radius, ShapeRenderer2D& renderer) : Element(alignment), m_Color(color), m_Radius(radius), m_Renderer(renderer), m_Quality(32) {}
+		RoundedColoredRect(alignment::ElementAlignment alignment, glm::vec4 color, float radius, ShapeRenderer2D& renderer) : Element(alignment), color(color), radius(radius), renderer(renderer), quality(32) {}
 		RoundedColoredRect(alignment::ElementAlignment alignment, glm::vec3 color, float radius, ShapeRenderer2D& renderer) : RoundedColoredRect(alignment, glm::vec4(color, 1.0f), radius, renderer) {}
 		
 		void render(const Window& window, time::Duration delta) override {
-			m_Renderer.roundedRect(window, getPixelPosition(), getPixelSize(), m_Color, m_Radius, m_Quality);
+			renderer.roundedRect(window, getPixelPosition(), getPixelSize(), color, radius, quality);
 		}
 	};
 }

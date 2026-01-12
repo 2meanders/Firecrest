@@ -35,7 +35,7 @@ namespace fc {
                     , textRenderer
                 )) 
             {
-                minMaxText._wrapMode = Text::WrapMode::NoWrap;
+                minMaxText.wrapMode = Text::WrapMode::NoWrap;
                 minMaxText.wrapTightly = true;
             }
 
@@ -51,14 +51,14 @@ namespace fc {
             graph.data = data;
 
             if(data.size() == 0) {
-                minMaxText.setText("Min: N/A Max: N/A");
+                minMaxText.text = "Min: N/A Max: N/A";
                 return;
             }
             
             const float dataMinY = std::min_element(data.begin(), data.end(), [](auto a, auto b) { return a.y < b.y; })->y;
             const float dataMaxY = std::max_element(data.begin(), data.end(), [](auto a, auto b) { return a.y < b.y; })->y;
 
-            minMaxText.setText("Min: " + std::to_string(dataMinY) + " Max: " + std::to_string(dataMaxY));
+            minMaxText.text = "Min: " + std::to_string(dataMinY) + " Max: " + std::to_string(dataMaxY);
         }
     };
 }

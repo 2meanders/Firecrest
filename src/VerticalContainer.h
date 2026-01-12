@@ -25,7 +25,7 @@ namespace fc {
                         float childSize = child->getPixelSize().y;
                         totalSize += childSize;
                         if (childSize > 0) {
-                            totalSize += m_Spacing;
+                            totalSize += spacing;
                         }
                         index++;
                     }

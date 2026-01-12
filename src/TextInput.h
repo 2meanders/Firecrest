@@ -4,8 +4,9 @@
 
 namespace fc {
 	class TextInput : public Scrollable {
-	private:
+	public:
 		Text& text;
+	private:
 		int32_t _cursorPosition = 0;
 		int cursorBlinkCounter = 0;
 		bool _showCursor = false;
@@ -22,9 +23,9 @@ namespace fc {
 		virtual void onLetterTyped(Input& input, input::UnicodeCodePoint letter) override {
 			if (static_cast<char>(letter) < 0) return;
 
-			std::string str = text.getText();
+			std::string str = text.text;
 			std::string newStr = str.substr(0, _cursorPosition) + static_cast<char>(letter) + str.substr(_cursorPosition);
-			text.setText(newStr);
+			text.text = newStr;
 			_cursorPosition++; 
 		}
 
@@ -39,9 +40,9 @@ namespace fc {
 			const int interval = 60; // Blink every 30 frames
 			if (cursorBlinkCounter % interval < interval / 2 && _showCursor) {
 				const auto pos = cursorPixelPos();
-				const float lineHeight = text._renderer.lineHeight(text._textSize);
+				const float lineHeight = text.renderer.lineHeight(text.textSize);
 				const float relY = -0.2f * lineHeight;
-				_renderer.rect(window, glm::vec3(pos, 0) + glm::vec3(0, relY - getScrollOffset(), 0), { 3, lineHeight }, text._textColor);
+				_renderer.rect(window, glm::vec3(pos, 0) + glm::vec3(0, relY - getScrollOffset(), 0), { 3, lineHeight }, text.color);
 			}
 			cursorBlinkCounter++;
 		}
@@ -53,27 +54,27 @@ namespace fc {
 				switch (event.key) {
 					case GLFW_KEY_BACKSPACE:
 						if(_cursorPosition == 0) break; 
-						if (!text.getText().empty()) {
-							std::string str = text.getText();
+						if (!text.text.empty()) {
+							std::string str = text.text;
 							std::string newStr = str.substr(0, _cursorPosition - 1) + str.substr(_cursorPosition);
-							text.setText(newStr);
+							text.text = newStr;
 							_cursorPosition--;
 							clampCursor();
 						}
 						break;
 
 					case GLFW_KEY_DELETE:
-						if (!text.getText().empty() && _cursorPosition < text.getText().size()) {
-							std::string str = text.getText();
+						if (!text.text.empty() && _cursorPosition < text.text.size()) {
+							std::string str = text.text;
 							std::string newStr = str.substr(0, _cursorPosition) + str.substr(_cursorPosition + 1);
-							text.setText(newStr);
+							text.text = newStr;
 						}
 						break;
 
                     case GLFW_KEY_ENTER: {
-                        std::string str = text.getText();
+                        std::string str = text.text;
                         std::string newStr = str.substr(0, _cursorPosition) + '\n' + str.substr(_cursorPosition);
-                        text.setText(newStr);
+                        text.text = newStr;
 						_cursorPosition++;
 						clampCursor();
                         break;
@@ -84,7 +85,7 @@ namespace fc {
 						if (input.keyPressed(GLFW_KEY_LEFT_CONTROL) ||
 							input.keyPressed(GLFW_KEY_RIGHT_CONTROL)) {
 
-							const std::string& s = text.getText();
+							const std::string& s = text.text;
 
 							if (_cursorPosition > 0) {
 								// Step 2: skip non-whitespace (the word)
@@ -111,7 +112,7 @@ namespace fc {
 						if (input.keyPressed(GLFW_KEY_LEFT_CONTROL) ||
 							input.keyPressed(GLFW_KEY_RIGHT_CONTROL)) {
 
-							const std::string& s = text.getText();
+							const std::string& s = text.text;
 							const size_t len = s.size();
 
 							// Step 1: skip non-whitespace (current word)
@@ -163,7 +164,7 @@ namespace fc {
 					case GLFW_KEY_DOWN: {
 						const uint32_t line = cursorLineNumber();
 						if (line >= text.lines().size() - 1) {
-							_cursorPosition = text.getText().size();
+							_cursorPosition = text.text.size();
 							clampCursor();
 							break;
 						}
@@ -183,8 +184,8 @@ namespace fc {
 
 					case GLFW_KEY_V: {
 						const char* clipboard = input.clipboard();
-						std::string str = text.getText();
-						text.setText(str.substr(0, _cursorPosition) + clipboard + str.substr(_cursorPosition));
+						std::string str = text.text;
+						text.text = str.substr(0, _cursorPosition) + clipboard + str.substr(_cursorPosition);
 						break;
 					}
 
@@ -241,10 +242,10 @@ namespace fc {
             const glm::vec2 pos = getPixelPosition();
 
             // Calculate X: width of text before cursor on this line
-            const float x = pos.x + text._renderer.width(lineText, text._textSize);
+            const float x = pos.x + text.renderer.width(lineText, text.textSize);
 
             // Calculate Y: top + line * lineHeight
-            const float lineHeight = text._renderer.lineHeight(text._textSize);
+            const float lineHeight = text.renderer.lineHeight(text.textSize);
             const float y = pos.y + getPixelSize().y - (line + 1) * lineHeight;
 
             return glm::vec2(x, y);
@@ -253,13 +254,9 @@ namespace fc {
 		void clampCursor() {
 			if(_cursorPosition < 0) {
 				_cursorPosition = 0;
-			} else if(_cursorPosition > text.getText().length()) {
-				_cursorPosition = text.getText().length();
+			} else if(_cursorPosition > text.text.length()) {
+				_cursorPosition = text.text.length();
 			}
-		}
-
-		void setText(const std::string& text) {
-			this->text.setText(text);
 		}
 	};
 }

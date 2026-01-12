@@ -5,7 +5,7 @@
 #include "Element.h"
 #include "gl/RenderRegion.h"
 #include "Container.h"
-
+#include "core/Tracked.h"
 
 namespace fc {
 
@@ -17,36 +17,54 @@ namespace fc {
             // WordWrap    // Text will wrap at word boundaries if too long
         };
     public:
-        glm::vec4 _textColor;
-        float _textSize;
-        WrapMode _wrapMode;
-        
+        TextRenderer& renderer;
         alignment::AlignmentFunction defaultWidth;
         alignment::AlignmentFunction defaultHeight;
+    
+        Tracked<glm::vec4> color;
+        Tracked<float> textSize;
+        Tracked<WrapMode> wrapMode {WrapMode::Wrap};
+        Tracked<bool> wrapTightly {false};
+        std::string text;
     private:
-        std::string _text;
         // vector<pair<lineText, position relative to self>>
         std::vector<std::pair<std::string, glm::vec2>> _linesCache;
-
+        
         glm::vec2 _lastParentSize = { -1, -1 };
-    public:
-        TextRenderer& _renderer;
+        std::string _lastText;
 
-        bool wrapTightly = false;
     public:
-        Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, TextRenderer& textRenderer) : Element(alignment), _textSize(textSize), _renderer(textRenderer), _wrapMode(WrapMode::Wrap), _textColor(textColor), defaultWidth(alignment.width), defaultHeight(alignment.height) {}
+        Text(alignment::ElementAlignment alignment, glm::vec4 textColor, float textSize, TextRenderer& textRenderer) : Element(alignment), textSize(textSize), renderer(textRenderer), color(textColor), defaultWidth(alignment.width), defaultHeight(alignment.height) {}
 
         virtual void render(const Window& window, time::Duration delta) override {
+            bool shouldRebuild = false;
+
             const glm::vec2 parentSize = parent().getPixelSize();
             if (parentSize != _lastParentSize) {
-                buildLinesCache();
+                shouldRebuild = true;
                 _lastParentSize = parentSize;
-            } 
-            if (_text.empty()) return;
+            }
 
-            gl::RenderRegion::push(getPixelRectangle(), gl::RenderRegion::Mode::Scissor);
-            const glm::vec2 pos = getPixelPosition();
-            const glm::vec2 size = getPixelSize();
+            if (text != _lastText) {
+                shouldRebuild = true;
+                _lastText = text;
+            }
+            
+            if(color.isModified() || textSize.isModified() || wrapMode.isModified() || wrapTightly.isModified()) {
+                shouldRebuild = true;
+            }
+
+            if (shouldRebuild) {
+                buildLinesCache();
+            }
+            
+
+            if (text.empty()) return;
+
+            const Rectangle rect = getPixelRectangle();
+            gl::RenderRegion::push(rect, gl::RenderRegion::Mode::Scissor);
+            const glm::vec2 pos = rect.position;
+            const glm::vec2 size = rect.size;
             const float top = pos.y + size.y;
             const float bottom = pos.y;
 
@@ -56,7 +74,7 @@ namespace fc {
 
                 // Only render if line is within vertical bounds
                 if (lineY <= top && lineY >= bottom) {
-                    _renderer.renderText(window, line.first, glm::vec3(linePos, 0), _textSize, _textColor);
+                    renderer.renderText(window, line.first, glm::vec3(linePos, 0), textSize, color);
                 }
             }
 
@@ -66,15 +84,15 @@ namespace fc {
 
         void buildLinesCache() {
             _linesCache.clear();
-            const std::string string = _text;
+            const std::string string = text;
             const float maxLineWidth = this->defaultWidth(parent().getPixelSize().x, parent().getPixelSize().y);
-			const float lineHeight = _renderer.lineHeight(_textSize);
+			const float lineHeight = renderer.lineHeight(textSize);
             
             bool isWrapped = false;
 
-            if (_wrapMode == WrapMode::NoWrap) {
+            if (wrapMode == WrapMode::NoWrap) {
                 _linesCache.push_back({ string, { 0, -lineHeight } });
-            } else if (_wrapMode == WrapMode::Wrap) {
+            } else if (wrapMode == WrapMode::Wrap) {
                 float yPos = 0;
 
 				auto segments = utils::strsplit(string, "\n", true);
@@ -87,7 +105,7 @@ namespace fc {
 
                     size_t charIndex = 0;
                     while (!str.empty()) {
-                        const float lineWidth = _renderer.width(str.substr(0, charIndex), _textSize);
+                        const float lineWidth = renderer.width(str.substr(0, charIndex), textSize);
 						const bool atEnd = charIndex > str.length();
 						const bool isTooWide = lineWidth > maxLineWidth;
                         if (atEnd || isTooWide) {
@@ -111,10 +129,10 @@ namespace fc {
             
             if(!isWrapped && wrapTightly) {
                 // Find widest line width
-                float widestLineWidth = _renderer.width(std::max_element(_linesCache.begin(), _linesCache.end(),
+                float widestLineWidth = renderer.width(std::max_element(_linesCache.begin(), _linesCache.end(),
                     [&](const std::pair<std::string, glm::vec2>& a, const std::pair<std::string, glm::vec2>& b) {
-                        return _renderer.width(a.first, _textSize) < _renderer.width(b.first, _textSize);
-                    })->first, _textSize);
+                        return renderer.width(a.first, textSize) < renderer.width(b.first, textSize);
+                    })->first, textSize);
 
                 
                 if(widestLineWidth <= maxLineWidth) {
@@ -127,7 +145,7 @@ namespace fc {
             }
             
             if (wrapTightly) {
-                const float height = lineHeight * _linesCache.size() - _renderer.descenderHeight(_textSize);
+                const float height = lineHeight * _linesCache.size() - renderer.descenderHeight(textSize);
                 alignment.setHeight(alignment::Pixels(height));
             } else {
                 alignment.setHeight(defaultHeight);
@@ -149,15 +167,6 @@ namespace fc {
                 line.second += pos;
             }
             return l;
-        }
-
-        const std::string& getText() const {
-			return _text;
-        }
-
-        void setText(const std::string& text) {
-            _text = text;
-            buildLinesCache();
         }
 
     };
