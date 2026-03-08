@@ -1,27 +1,31 @@
 #pragma once
 
 #include "glad/glad.h"
-#include "glfw/glfw3.h"
+#include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
-namespace fc::input {
-    
-    enum class RawKeyAction {
+namespace fc::input
+{
+
+    enum class RawKeyAction
+    {
         Press,
         Repeat,
         Up,
     };
-    
+
     using RawKey = int;
-    
-    struct RawKeyboardEvent {
+
+    struct RawKeyboardEvent
+    {
         RawKey key;
         RawKeyAction action;
         int scancode;
         int mods; // See: https://www.glfw.org/docs/3.3/group__mods.html
     };
-    
-    enum class RawMouseButton {
+
+    enum class RawMouseButton
+    {
         Button1 = GLFW_MOUSE_BUTTON_1,
         Button2 = GLFW_MOUSE_BUTTON_2,
         Button3 = GLFW_MOUSE_BUTTON_3,
@@ -30,31 +34,35 @@ namespace fc::input {
         Button6 = GLFW_MOUSE_BUTTON_6,
         Button7 = GLFW_MOUSE_BUTTON_7,
         Button8 = GLFW_MOUSE_BUTTON_8,
-        
+
         Left = GLFW_MOUSE_BUTTON_LEFT,
         Right = GLFW_MOUSE_BUTTON_RIGHT,
         Middle = GLFW_MOUSE_BUTTON_MIDDLE,
-        
+
         Count
     };
-    
-    enum class RawMouseButtonAction {
+
+    enum class RawMouseButtonAction
+    {
         Press,
         Up,
     };
-    
-    struct RawMouseButtonEvent {
+
+    struct RawMouseButtonEvent
+    {
         RawMouseButton button;
         RawMouseButtonAction action;
         int mods;
     };
-    
-    struct RawMouseMotionEvent {
+
+    struct RawMouseMotionEvent
+    {
         glm::vec2 position;
         glm::vec2 lastPosition;
     };
 
-    struct RawScrollEvent {
+    struct RawScrollEvent
+    {
         glm::vec2 offset;
     };
 

@@ -6,4 +6,4 @@
 	url = https://github.com/g-truc/glm.git
 [submodule "libraries/FixedIndexVector"]
 	path = libraries/FixedIndexVector
-	url = https://github.com/meanders1/FixedIndexVector.git
+	url = https://github.com/2meanders/FixedIndexVector.git

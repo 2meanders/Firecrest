@@ -4,9 +4,10 @@
 #include "gl/VertexBufferLayout.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "core/StringUtils.h"
+#include <stdexcept>
 
-static constexpr const char* VERTEX_SOURCE = 
-R"(
+static constexpr const char *VERTEX_SOURCE =
+	R"(
 #version 330 core
 layout(location = 0) in vec3 pos;
 layout(location = 1) in vec2 uv;
@@ -20,8 +21,8 @@ void main() {
 }
 )";
 
-static constexpr const char* FRAGMENT_SOURCE =
-R"(
+static constexpr const char *FRAGMENT_SOURCE =
+	R"(
 #version 330 core
 in vec2 TexCoords;
 out vec4 color;
@@ -36,13 +37,15 @@ void main() {
 }
 )";
 
-
-void fc::TextRenderer::addChar(char charCode) {
+void fc::TextRenderer::addChar(char charCode)
+{
 	// Check if character already exists
-	if (_characters.contains(charCode)) return;
+	if (_characters.contains(charCode))
+		return;
 
-	if (FT_Load_Char(_face, charCode, FT_LOAD_RENDER)) {
-		throw std::exception(("Unable to load character with unicode code point: " + std::to_string(charCode)).c_str());
+	if (FT_Load_Char(_face, charCode, FT_LOAD_RENDER))
+	{
+		throw std::runtime_error(("Unable to load character with unicode code point: " + std::to_string(charCode)).c_str());
 	}
 	Character character = {
 		std::make_shared<gl::Texture2D>(
@@ -51,19 +54,20 @@ void fc::TextRenderer::addChar(char charCode) {
 			_face->glyph->bitmap.rows,
 			GL_RED,
 			GL_UNSIGNED_BYTE,
-			_face->glyph->bitmap.buffer
-		),
+			_face->glyph->bitmap.buffer),
 		glm::ivec2(_face->glyph->bitmap.width, _face->glyph->bitmap.rows),
 		glm::ivec2(_face->glyph->bitmap_left, _face->glyph->bitmap_top),
-		static_cast<uint32_t>(_face->glyph->advance.x)
-	};
+		static_cast<uint32_t>(_face->glyph->advance.x)};
 	_characters.emplace(charCode, character);
 }
 
-fc::TextRenderer::TextRenderer(std::string fontPath, FT_UInt nominalFontHeight) : _nominalFontHeight(nominalFontHeight) {
-	if(_numInstances == 0) {
-		if (FT_Init_FreeType(&_ftlib)) {
-			throw std::exception("Unable to initialize the FreeType Library");
+fc::TextRenderer::TextRenderer(std::string fontPath, FT_UInt nominalFontHeight) : _nominalFontHeight(nominalFontHeight)
+{
+	if (_numInstances == 0)
+	{
+		if (FT_Init_FreeType(&_ftlib))
+		{
+			throw std::runtime_error("Unable to initialize the FreeType Library");
 		}
 		_textShader = std::make_unique<gl::Shader>();
 		_textShader->addStageSource(GL_VERTEX_SHADER, VERTEX_SOURCE);
@@ -74,12 +78,14 @@ fc::TextRenderer::TextRenderer(std::string fontPath, FT_UInt nominalFontHeight) 
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
-	if (FT_New_Face(_ftlib, fontPath.c_str(), 0, &_face)) {
-		throw std::exception("Unable to load font");
+	if (FT_New_Face(_ftlib, fontPath.c_str(), 0, &_face))
+	{
+		throw std::runtime_error("Unable to load font");
 	}
 	FT_Set_Pixel_Sizes(_face, 0, _nominalFontHeight);
 
-	for(char c = 32; c < 127; c++) {
+	for (char c = 32; c < 127; c++)
+	{
 		addChar(c);
 	}
 
@@ -96,26 +102,30 @@ fc::TextRenderer::TextRenderer(std::string fontPath, FT_UInt nominalFontHeight) 
 	_vao.unbind();
 }
 
-fc::TextRenderer::~TextRenderer() {
+fc::TextRenderer::~TextRenderer()
+{
 	_numInstances--;
 	FT_Done_Face(_face);
-	
-	if (_numInstances == 0) {
+
+	if (_numInstances == 0)
+	{
 		FT_Done_FreeType(_ftlib);
 	}
 }
 
-void fc::TextRenderer::renderText(const Window& window, const std::string& text, glm::vec3 pos, float scale, glm::vec4 color) {
+void fc::TextRenderer::renderText(const Window &window, const std::string &text, glm::vec3 pos, float scale, glm::vec4 color)
+{
 	renderText(static_cast<glm::vec2>(window.dimensions()), text, pos, scale, color);
 }
 
-void fc::TextRenderer::renderText(glm::vec2 viewportSize, const std::string &text, glm::vec3 pos, float scale, glm::vec4 color) {
+void fc::TextRenderer::renderText(glm::vec2 viewportSize, const std::string &text, glm::vec3 pos, float scale, glm::vec4 color)
+{
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	
+
 	glDisable(GL_DEPTH_TEST);
 
 	glm::mat4 projection = glm::ortho(0.0f, viewportSize.x, 0.0f, viewportSize.y);
@@ -125,10 +135,13 @@ void fc::TextRenderer::renderText(glm::vec2 viewportSize, const std::string &tex
 
 	_vao.bind();
 
-	for (const auto& c : text) {
-		if (!std::isprint(c)) continue; // Skip non-printable characters
+	for (const auto &c : text)
+	{
+		if (!std::isprint(c))
+			continue; // Skip non-printable characters
 
-		if (!_characters.contains(c)) {
+		if (!_characters.contains(c))
+		{
 			// This check is redundant
 			addChar(c);
 		}
@@ -142,14 +155,13 @@ void fc::TextRenderer::renderText(glm::vec2 viewportSize, const std::string &tex
 		float z = pos.z;
 		// update VBO for each character
 		TextRenderer::Vertex vertices[6] = {
-			{ { xpos,     ypos + h, z },  { 0.0f, 0.0f } },
-			{ { xpos,     ypos,     z },  { 0.0f, 1.0f } },
-			{ { xpos + w, ypos,     z },  { 1.0f, 1.0f } },
+			{{xpos, ypos + h, z}, {0.0f, 0.0f}},
+			{{xpos, ypos, z}, {0.0f, 1.0f}},
+			{{xpos + w, ypos, z}, {1.0f, 1.0f}},
 
-			{ { xpos,     ypos + h, z },  { 0.0f, 0.0f } },
-			{ { xpos + w, ypos,     z },  { 1.0f, 1.0f } },
-			{ { xpos + w, ypos + h, z },  { 1.0f, 0.0f } }
-		};
+			{{xpos, ypos + h, z}, {0.0f, 0.0f}},
+			{{xpos + w, ypos, z}, {1.0f, 1.0f}},
+			{{xpos + w, ypos + h, z}, {1.0f, 0.0f}}};
 
 		ch.texture->bind(0);
 
@@ -166,45 +178,56 @@ void fc::TextRenderer::renderText(glm::vec2 viewportSize, const std::string &tex
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-float fc::TextRenderer::width(const std::string& text, float scale) {
+float fc::TextRenderer::width(const std::string &text, float scale)
+{
 	float x = 0;
-	for (const auto& c : text) {
-		if(!_characters.contains(c)) continue;
+	for (const auto &c : text)
+	{
+		if (!_characters.contains(c))
+			continue;
 
 		x += (_characters[c].advance >> 6) * (scale / _nominalFontHeight);
 	}
 	return x;
 }
 
-float fc::TextRenderer::height(const std::string& text, float scale) {
+float fc::TextRenderer::height(const std::string &text, float scale)
+{
 	float minY = 1000.0f;
 	float maxY = -1000.0f;
-	for(const auto& c : text) {
-		if(!_characters.contains(c)) continue;
+	for (const auto &c : text)
+	{
+		if (!_characters.contains(c))
+			continue;
 
-		const Character& ch = _characters[c];
+		const Character &ch = _characters[c];
 		float yMin = (ch.bearing.y - ch.size.y) * (scale / _nominalFontHeight);
 		float yMax = ch.bearing.y * (scale / _nominalFontHeight);
-		if (yMin < minY) {
+		if (yMin < minY)
+		{
 			minY = yMin;
 		}
-		if (yMax > maxY) {
+		if (yMax > maxY)
+		{
 			maxY = yMax;
 		}
 	}
 	return maxY - minY;
 }
 
-float fc::TextRenderer::lineHeight(float scale) {
+float fc::TextRenderer::lineHeight(float scale)
+{
 	return (_face->size->metrics.height / 64.0f) * (scale / _nominalFontHeight);
 }
 
-float fc::TextRenderer::descenderHeight(float scale) {
-    return (_face->size->metrics.descender / 64.0f) * (scale / _nominalFontHeight);
+float fc::TextRenderer::descenderHeight(float scale)
+{
+	return (_face->size->metrics.descender / 64.0f) * (scale / _nominalFontHeight);
 }
 
-float fc::TextRenderer::ascenderHeight(float scale) {
-    return (_face->size->metrics.ascender / 64.0f) * (scale / _nominalFontHeight);
+float fc::TextRenderer::ascenderHeight(float scale)
+{
+	return (_face->size->metrics.ascender / 64.0f) * (scale / _nominalFontHeight);
 }
 
 uint32_t fc::TextRenderer::_numInstances = 0;
