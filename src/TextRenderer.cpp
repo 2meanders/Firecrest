@@ -90,7 +90,6 @@ void TextRenderer::renderText(glm::vec2 viewportSize, const std::string& text,
     _textShader.setUniformMat4f("projection", projection);
     _textShader.setUniform4f("textColor", color.x, color.y, color.z, color.w);
     _textShader.setUniform1i("atlas", 0);
-    _textShader.setUniform1f("uPxRange", 2.0f);
     _charset.atlas().bind(0);
 
     _vao.bind();
