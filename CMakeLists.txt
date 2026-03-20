@@ -25,8 +25,11 @@ add_subdirectory(libraries/glm)
 add_subdirectory(libraries/freetype-2.13.3)
 add_subdirectory(libraries/glad/)
 
+set(MSDF_ATLAS_USE_SKIA OFF)
+add_subdirectory(libraries/msdf-atlas-gen)
+
 find_package(OpenGL REQUIRED)
-target_link_libraries(Firecrest PUBLIC glfw OpenGL::GL freetype glad)
+target_link_libraries(Firecrest PUBLIC glfw OpenGL::GL freetype glad msdf-atlas-gen)
 
 # Definitions and standard
 target_compile_definitions(Firecrest PUBLIC GLM_ENABLE_EXPERIMENTAL)

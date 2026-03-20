@@ -7,3 +7,7 @@
 [submodule "libraries/FixedIndexVector"]
 	path = libraries/FixedIndexVector
 	url = https://github.com/2meanders/FixedIndexVector.git
+
+[submodule "libraries/msdf-atlas-gen"]
+	path = libraries/msdf-atlas-gen
+	url = https://github.com/Chlumsky/msdf-atlas-gen.git
