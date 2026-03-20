@@ -13,29 +13,29 @@
 
 namespace fc {
 class TextRenderer {
-  private:
+private:
     struct Vertex {
         glm::vec3 pos;
         glm::vec2 texCoord;
     };
 
-  private:
+private:
     gl::Shader _textShader;
     gl::VertexArray _vao;
     gl::VertexBuffer _vbo;
 
     Charset _charset;
 
-  public:
+public:
     TextRenderer(const std::string& fontPath);
 
     TextRenderer(const TextRenderer&) = delete;
     TextRenderer& operator=(const TextRenderer&) = delete;
 
-    void renderText(const Window& window, const std::string& text,
-                    glm::vec3 pos, float scale, glm::vec4 color);
-    void renderText(glm::vec2 viewportSize, const std::string& text,
-                    glm::vec3 pos, float scale, glm::vec4 color);
+    void renderText(const Window& window, const std::string& text, glm::vec3 pos, float scale,
+                    glm::vec4 color);
+    void renderText(glm::vec2 viewportSize, const std::string& text, glm::vec3 pos, float scale,
+                    glm::vec4 color);
     float width(const std::string& text, float scale);
     float height(const std::string& text, float scale);
     float lineHeight(float scale);

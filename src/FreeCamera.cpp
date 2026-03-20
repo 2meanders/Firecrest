@@ -1,16 +1,15 @@
 #include "FreeCamera.h"
 #include "glm/gtx/rotate_vector.hpp"
 
-fc::FreeCamera::FreeCamera() 
-    : up(0, 1, 0)
-    , front(0, 0, -1)
-    , position(0, 0, 1)
-    , fovy(45)
-    , zNear(0.1f)
-    , zFar(100)
-    , mouseSensitivity(3.4f)
-    , movementSpeed(1.2f) 
-{}
+fc::FreeCamera::FreeCamera()
+    : up(0, 1, 0),
+      front(0, 0, -1),
+      position(0, 0, 1),
+      fovy(45),
+      zNear(0.1f),
+      zFar(100),
+      mouseSensitivity(3.4f),
+      movementSpeed(1.2f) {}
 
 void fc::FreeCamera::pan(const float degrees) {
     front = glm::rotate(front, glm::radians(degrees), -up);
@@ -19,8 +18,9 @@ void fc::FreeCamera::pan(const float degrees) {
 void fc::FreeCamera::tilt(const float degrees) {
     const glm::vec3 right = glm::cross(front, up);
     front = glm::rotate(front, glm::radians(degrees), right);
-    // Rotating up axis as well allows for 360 rotations, but creates roll after tilt and pan movements (moving the mouse in circles).
-    //up = glm::rotate(up, glm::radians(degrees), right);
+    // Rotating up axis as well allows for 360 rotations, but creates roll after
+    // tilt and pan movements (moving the mouse in circles).
+    // up = glm::rotate(up, glm::radians(degrees), right);
 }
 
 void fc::FreeCamera::roll(const float degrees) {
@@ -64,7 +64,7 @@ void fc::FreeCamera::handleInput(const Input& input, const Window& window, time:
     glm::vec2 mouseDelta = input.deltaMouse() * static_cast<float>(delta.seconds());
 
     // Calculate movement
-    glm::vec3 movement{ 0, 0, 0 };
+    glm::vec3 movement{0, 0, 0};
     if (input.keyPressed(GLFW_KEY_W))
         movement.z -= movementSpeed;
     if (input.keyPressed(GLFW_KEY_S))
@@ -77,10 +77,10 @@ void fc::FreeCamera::handleInput(const Input& input, const Window& window, time:
         movement.y -= movementSpeed;
     if (input.keyPressed(GLFW_KEY_SPACE))
         movement.y += movementSpeed;
-    
+
     if (input.keyPressed(GLFW_KEY_F))
         movement *= 3;
-        
+
     movement *= delta.seconds();
     mouseDelta.x *= mouseSensitivity.pan;
     mouseDelta.y *= mouseSensitivity.tilt;

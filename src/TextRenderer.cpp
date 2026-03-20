@@ -70,21 +70,19 @@ TextRenderer::TextRenderer(const std::string& fontPath) : _charset(fontPath) {
     _vbo.unbind();
 }
 
-void TextRenderer::renderText(const Window& window, const std::string& text,
-                              glm::vec3 pos, float scale, glm::vec4 color) {
-    renderText(static_cast<glm::vec2>(window.dimensions()), text, pos, scale,
-               color);
+void TextRenderer::renderText(const Window& window, const std::string& text, glm::vec3 pos,
+                              float scale, glm::vec4 color) {
+    renderText(static_cast<glm::vec2>(window.dimensions()), text, pos, scale, color);
 }
 
-void TextRenderer::renderText(glm::vec2 viewportSize, const std::string& text,
-                              glm::vec3 pos, float scale, glm::vec4 color) {
+void TextRenderer::renderText(glm::vec2 viewportSize, const std::string& text, glm::vec3 pos,
+                              float scale, glm::vec4 color) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDisable(GL_DEPTH_TEST);
 
-    glm::mat4 projection =
-        glm::ortho(0.0f, viewportSize.x, 0.0f, viewportSize.y);
+    glm::mat4 projection = glm::ortho(0.0f, viewportSize.x, 0.0f, viewportSize.y);
 
     _textShader.bind();
     _textShader.setUniformMat4f("projection", projection);
@@ -123,10 +121,9 @@ void TextRenderer::renderText(glm::vec2 viewportSize, const std::string& text,
         vertices.push_back({{xpos + w, ypos, pos.z}, {u1, v0}}); // Bottom Right
 
         // Triangle 2
-        vertices.push_back({{xpos, ypos + h, pos.z}, {u0, v1}}); // Top Left
-        vertices.push_back({{xpos + w, ypos, pos.z}, {u1, v0}}); // Bottom Right
-        vertices.push_back(
-            {{xpos + w, ypos + h, pos.z}, {u1, v1}}); // Top Right
+        vertices.push_back({{xpos, ypos + h, pos.z}, {u0, v1}});     // Top Left
+        vertices.push_back({{xpos + w, ypos, pos.z}, {u1, v0}});     // Bottom Right
+        vertices.push_back({{xpos + w, ypos + h, pos.z}, {u1, v1}}); // Top Right
 
         x += glyph.advance * scale;
     }

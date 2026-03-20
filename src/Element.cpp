@@ -1,12 +1,8 @@
 #include "Element.h"
 #include "Container.h"
 
-fc::Element::Element(alignment::ElementAlignment alignment) 
-    : alignment(alignment)
-    , _parent(nullptr)
-    , _hasFocus(false) 
-    , focusable(false)
-{}
+fc::Element::Element(alignment::ElementAlignment alignment)
+    : alignment(alignment), _parent(nullptr), _hasFocus(false), focusable(false) {}
 
 glm::vec2 fc::Element::getPixelPosition() const {
     return parent().calculateChildPixelPosition(alignment);
@@ -17,7 +13,7 @@ glm::vec2 fc::Element::getPixelSize() const {
 }
 
 fc::Rectangle fc::Element::getPixelRectangle() const {
-    return { getPixelPosition(), getPixelSize() };
+    return {getPixelPosition(), getPixelSize()};
 }
 
 void fc::Element::unFocus() {

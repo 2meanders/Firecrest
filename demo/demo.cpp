@@ -5,51 +5,57 @@
 using namespace fc;
 
 int main() {
-	WindowProperties properties;
-	properties.width = 1400;
-	properties.height = 800;
-	properties.vsync = true;
-	properties.resizable = true;
-	properties.antialiasing = true;
-	properties.title = "UI Example";
+    WindowProperties properties;
+    properties.width = 1400;
+    properties.height = 800;
+    properties.vsync = true;
+    properties.resizable = true;
+    properties.antialiasing = true;
+    properties.title = "UI Example";
 
-	Window window(properties);
+    Window window(properties);
 
-	Display display(window);
-	window.clearColor(glm::vec4(1, 0, 1, 1.0f));
+    Display display(window);
+    window.clearColor(glm::vec4(1, 0, 1, 1.0f));
 
-	res::ResourceManager res;
-	
-	ShapeRenderer2D& shapeRenderer = display.createRenderer<ShapeRenderer2D>();
-	TextRenderer textRenderer(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
-	
-	auto& v1 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)));
-	auto& v2 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
-	auto& v3 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)));
-	auto& v4 = display.createChild<Container>	(alignment::ElementAlignment().setWidth(alignment::Relative(0.5)).setHeight(alignment::Relative(0.5)).setX(alignment::Relative(0.5)).setY(alignment::Relative(0.5)));
-	
-	
-	auto& textInput = v1.createChild<TextInput>(
-		alignment::ElementAlignment()
-		, glm::vec4(1, 1, 1, 1)
-		, glm::vec4(0.1, 0.1, 0.1, 1)
-		, 24.0f
-		, "This is a text input field. Try it!"
-		, shapeRenderer
-		, textRenderer
-	);
-	
-	auto& graph = v2.createChild<Graph>(alignment::ElementAlignment(), shapeRenderer, textRenderer, 16.0f);
-	std::vector<glm::vec2> graphData;
-	float graphTimeOffset = 0.0f;
+    res::ResourceManager res;
 
-	v3.createChild<ColoredRect>(alignment::ElementAlignment(), glm::vec4(0, 0, 0, 1), shapeRenderer);
-	v4.createChild<ColoredRect>(alignment::ElementAlignment(), glm::vec4(0.05, 0.05, 0.05, 1), shapeRenderer);
+    ShapeRenderer2D& shapeRenderer = display.createRenderer<ShapeRenderer2D>();
+    TextRenderer textRenderer(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
 
-	auto& gradient = v3
-	.createChild<ShaderQuad>(
-		alignment::ElementAlignment(),
-R"(
+    auto& v1 = display.createChild<Container>(alignment::ElementAlignment()
+                                                  .setWidth(alignment::Relative(0.5))
+                                                  .setHeight(alignment::Relative(0.5)));
+    auto& v2 = display.createChild<Container>(alignment::ElementAlignment()
+                                                  .setWidth(alignment::Relative(0.5))
+                                                  .setHeight(alignment::Relative(0.5))
+                                                  .setY(alignment::Relative(0.5)));
+    auto& v3 = display.createChild<Container>(alignment::ElementAlignment()
+                                                  .setWidth(alignment::Relative(0.5))
+                                                  .setHeight(alignment::Relative(0.5))
+                                                  .setX(alignment::Relative(0.5)));
+    auto& v4 = display.createChild<Container>(alignment::ElementAlignment()
+                                                  .setWidth(alignment::Relative(0.5))
+                                                  .setHeight(alignment::Relative(0.5))
+                                                  .setX(alignment::Relative(0.5))
+                                                  .setY(alignment::Relative(0.5)));
+
+    auto& textInput = v1.createChild<TextInput>(
+        alignment::ElementAlignment(), glm::vec4(1, 1, 1, 1), glm::vec4(0.1, 0.1, 0.1, 1), 24.0f,
+        "This is a text input field. Try it!", shapeRenderer, textRenderer);
+
+    auto& graph
+        = v2.createChild<Graph>(alignment::ElementAlignment(), shapeRenderer, textRenderer, 16.0f);
+    std::vector<glm::vec2> graphData;
+    float graphTimeOffset = 0.0f;
+
+    v3.createChild<ColoredRect>(alignment::ElementAlignment(), glm::vec4(0, 0, 0, 1),
+                                shapeRenderer);
+    v4.createChild<ColoredRect>(alignment::ElementAlignment(), glm::vec4(0.05, 0.05, 0.05, 1),
+                                shapeRenderer);
+
+    auto& gradient = v3.createChild<ShaderQuad>(alignment::ElementAlignment(),
+                                                R"(
 #version 330 core
 
 out vec4 FragColor;
@@ -92,49 +98,38 @@ void main()
 
     FragColor = vec4(color, 1.0);
 }
-)"
-	);
+)");
 
-	auto& button = v4
-	.createChild<VerticalCenterer>()
-	.createChild<HorisontalCenterer>()
-	.createChild<Button>(
-		alignment::ElementAlignment().setWidth(alignment::Pixels(200)).setHeight(alignment::Relative(0.5f)), 
-		glm::vec4(1, 0, 0, 1), 
-		glm::vec4(0.8, 0, 0, 1), 
-		glm::vec4(0.5, 0, 0, 1), 
-		glm::vec4(1, 1, 1, 1), 
-		16.0f,
-		"Press me!", 
-		[]() { 
-			std::cout << "Pressed! Callback called" << std::endl; 
-		},
-		shapeRenderer, 
-		textRenderer
-	);
+    auto& button
+        = v4.createChild<VerticalCenterer>().createChild<HorisontalCenterer>().createChild<Button>(
+            alignment::ElementAlignment()
+                .setWidth(alignment::Pixels(200))
+                .setHeight(alignment::Relative(0.5f)),
+            glm::vec4(1, 0, 0, 1), glm::vec4(0.8, 0, 0, 1), glm::vec4(0.5, 0, 0, 1),
+            glm::vec4(1, 1, 1, 1), 16.0f, "Press me!",
+            []() { std::cout << "Pressed! Callback called" << std::endl; }, shapeRenderer,
+            textRenderer);
 
-	time::Moment lastTime = time::now();
-	while (!window.shouldClose()) {
-		time::Moment now = time::now();
-		time::Duration delta = now - lastTime;
-		lastTime = now;
-		
-		graphData.push_back({graphTimeOffset, sin(graphTimeOffset) * graphTimeOffset});
-		graph.setData(graphData);
-		graphTimeOffset += 0.15f;
+    time::Moment lastTime = time::now();
+    while (!window.shouldClose()) {
+        time::Moment now = time::now();
+        time::Duration delta = now - lastTime;
+        lastTime = now;
 
-		window.clearScreen();
-		display.render();
-		window.display();
+        graphData.push_back({graphTimeOffset, sin(graphTimeOffset) * graphTimeOffset});
+        graph.setData(graphData);
+        graphTimeOffset += 0.15f;
 
-		// Include performance metrics in the title
-		window.setTitle("UI Example ("
-			+ std::to_string(delta.millis()) + "ms"
-			+ " fps: "
-			+ std::to_string((int)maths::round(1.0f / static_cast<float>(delta.seconds()), 1))
-			+ ")"
-		);
-	}
-	
-	return 0;
+        window.clearScreen();
+        display.render();
+        window.display();
+
+        // Include performance metrics in the title
+        window.setTitle(
+            "UI Example (" + std::to_string(delta.millis()) + "ms" + " fps: "
+            + std::to_string((int)maths::round(1.0f / static_cast<float>(delta.seconds()), 1))
+            + ")");
+    }
+
+    return 0;
 }

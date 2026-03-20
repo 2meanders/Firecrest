@@ -2,5 +2,5 @@
 #include "Alignment.h"
 
 namespace fc::alignment {
-	AlignmentFunction Relative(float coefficient);
+AlignmentFunction Relative(float coefficient);
 }

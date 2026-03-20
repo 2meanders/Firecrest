@@ -40,9 +40,8 @@ fc::Charset::Charset(const std::string& fontFile) {
 
     packer.getDimensions(width, height);
 
-    msdf_atlas::ImmediateAtlasGenerator<
-        float, 3, msdf_atlas::msdfGenerator,
-        msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3>>
+    msdf_atlas::ImmediateAtlasGenerator<float, 3, msdf_atlas::msdfGenerator,
+                                        msdf_atlas::BitmapAtlasStorage<msdf_atlas::byte, 3>>
         generator(width, height);
 
     msdf_atlas::GeneratorAttributes attributes;
@@ -60,8 +59,8 @@ fc::Charset::Charset(const std::string& fontFile) {
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    _atlas = fc::gl::Texture2D(GL_RGB8, actualWidth, actualHeight, GL_RGB,
-                               GL_UNSIGNED_BYTE, bitmap.pixels);
+    _atlas = fc::gl::Texture2D(GL_RGB8, actualWidth, actualHeight, GL_RGB, GL_UNSIGNED_BYTE,
+                               bitmap.pixels);
 
     for (const msdf_atlas::GlyphGeometry& g : glyphs) {
         char c = static_cast<char>(g.getCodepoint());
@@ -100,10 +99,18 @@ const fc::Charset::Glyph& fc::Charset::glyph(char c) const {
     return _glyphs.at((unsigned char)c);
 }
 
-const fc::gl::Texture2D& fc::Charset::atlas() const { return _atlas; }
+const fc::gl::Texture2D& fc::Charset::atlas() const {
+    return _atlas;
+}
 
-float fc::Charset::ascender() const { return _ascender; }
+float fc::Charset::ascender() const {
+    return _ascender;
+}
 
-float fc::Charset::descender() const { return _descender; }
+float fc::Charset::descender() const {
+    return _descender;
+}
 
-float fc::Charset::lineHeight() const { return _lineHeight; }
+float fc::Charset::lineHeight() const {
+    return _lineHeight;
+}

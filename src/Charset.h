@@ -5,7 +5,7 @@
 
 namespace fc {
 class Charset {
-  public:
+public:
     struct Glyph {
         glm::vec2 uvMin;
         glm::vec2 uvMax;
@@ -25,7 +25,7 @@ class Charset {
     float descender() const;
     float lineHeight() const;
 
-  private:
+private:
     std::unordered_map<char, Glyph> _glyphs;
 
     gl::Texture2D _atlas;

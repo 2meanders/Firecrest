@@ -1,35 +1,37 @@
 #pragma once
-#include <cstddef> 
-#include <vector>
 #include "Buffer.h"
 #include "SSBOLayout.h"
+#include <cstddef>
+#include <vector>
 
 namespace fc::gl {
 
-	class SSBO : public Buffer<GL_SHADER_STORAGE_BUFFER> {
-	private:
-		SSBOLayout _layout;
+class SSBO : public Buffer<GL_SHADER_STORAGE_BUFFER> {
+private:
+    SSBOLayout _layout;
 
-		void setLayout(const SSBOLayout& layout);
-	public:
-		const SSBOLayout& getLayout() const { return _layout; }
-	public:
+    void setLayout(const SSBOLayout& layout);
 
-		SSBO(const SSBOLayout& ssboLayout);
+public:
+    const SSBOLayout& getLayout() const { return _layout; }
 
-		SSBO(const SSBO&) = delete;
-		SSBO& operator=(const SSBO&) = delete;
+public:
+    SSBO(const SSBOLayout& ssboLayout);
 
-		void* dataPointer(GLuint index, GLbitfield access);
+    SSBO(const SSBO&) = delete;
+    SSBO& operator=(const SSBO&) = delete;
 
-		void getData(void* dest, GLuint index);
+    void* dataPointer(GLuint index, GLbitfield access);
 
-		void setData(const void* data, GLuint index);
+    void getData(void* dest, GLuint index);
 
-		// Must be called before rendering/compute shader dispatch to associate this buffer with the one in the shader
-		void bindIndex(GLuint index) const;
+    void setData(const void* data, GLuint index);
 
-		/// Returns true if the size was changed, else false.
-		bool resizeLast(GLuint count);
-	};
-}
+    // Must be called before rendering/compute shader dispatch to associate this
+    // buffer with the one in the shader
+    void bindIndex(GLuint index) const;
+
+    /// Returns true if the size was changed, else false.
+    bool resizeLast(GLuint count);
+};
+} // namespace fc::gl

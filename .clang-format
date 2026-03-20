@@ -1,0 +1,20 @@
+IndentWidth: 4
+ContinuationIndentWidth: 4
+UseTab: Never
+PointerAlignment: Left
+
+IndentAccessModifiers: false
+AccessModifierOffset: -4
+
+AllowShortFunctionsOnASingleLine: Inline
+AlignTrailingComments: true
+BreakBeforeBinaryOperators: All
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterControlStatement: true
+
+ColumnLimit: 100
