@@ -2,10 +2,9 @@
 
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 
 namespace fc::gl {
-
-class VertexBufferLayout;
 
 class VertexArray {
 private:
