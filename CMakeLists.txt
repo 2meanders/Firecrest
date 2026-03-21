@@ -15,21 +15,19 @@ target_include_directories(Firecrest PUBLIC
     libraries/glm
     libraries/FixedIndexVector
     libraries/stb_image
-    libraries/freetype-2.13.3/include
     libraries/glad/include
 )
 
 # Dependencies
 add_subdirectory(libraries/glfw)
 add_subdirectory(libraries/glm)
-add_subdirectory(libraries/freetype-2.13.3)
 add_subdirectory(libraries/glad/)
 
 set(MSDF_ATLAS_USE_SKIA OFF)
 add_subdirectory(libraries/msdf-atlas-gen)
 
 find_package(OpenGL REQUIRED)
-target_link_libraries(Firecrest PUBLIC glfw OpenGL::GL freetype glad msdf-atlas-gen)
+target_link_libraries(Firecrest PUBLIC glfw OpenGL::GL glad msdf-atlas-gen)
 
 # Definitions and standard
 target_compile_definitions(Firecrest PUBLIC GLM_ENABLE_EXPERIMENTAL)
