@@ -1,5 +1,6 @@
 #pragma once
 #include "Charset.h"
+#include "Renderer.h"
 #include "Window.h"
 #include "fiv.hpp"
 #include "gl/Shader.h"
@@ -12,7 +13,7 @@
 #include <string>
 
 namespace fc {
-class TextRenderer {
+class TextRenderer : public Renderer {
 private:
     struct Vertex {
         glm::vec3 pos;
@@ -41,5 +42,8 @@ public:
     float lineHeight(float scale);
     float descenderHeight(float scale);
     float ascenderHeight(float scale);
+
+    virtual void beforeRender(const fc::Window& window) {}
+    virtual void afterRender(const fc::Window& window) {}
 };
 } // namespace fc

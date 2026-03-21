@@ -21,7 +21,8 @@ int main() {
     res::ResourceManager res;
 
     ShapeRenderer2D& shapeRenderer = display.createRenderer<ShapeRenderer2D>();
-    TextRenderer textRenderer(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
+    TextRenderer& textRenderer
+        = display.createRenderer<TextRenderer>(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
 
     auto& v1 = display.createChild<Container>(alignment::ElementAlignment()
                                                   .setWidth(alignment::Relative(0.5))
