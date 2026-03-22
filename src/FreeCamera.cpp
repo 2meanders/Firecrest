@@ -39,9 +39,9 @@ void fc::FreeCamera::localTranslate(const glm::vec3 translation) {
 }
 
 void fc::FreeCamera::setProjection(const float fov, float zNear, float zFar) {
-    fovy = fov;
-    zNear = zNear;
-    zFar = zFar;
+    this->fovy = fov;
+    this->zNear = zNear;
+    this->zFar = zFar;
 }
 
 glm::mat4 fc::FreeCamera::localToWorld() const {
