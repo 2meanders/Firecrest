@@ -9,21 +9,49 @@ namespace fc::gl {
 
 std::string getShaderText(const std::string& filePath);
 
+struct ShaderHandle {
+    GLuint id = 0;
+
+    ShaderHandle() { id = glCreateProgram(); }
+
+    ~ShaderHandle()
+    {
+        if (id) {
+            glDeleteProgram(id);
+        }
+    }
+
+    ShaderHandle(const ShaderHandle&) = delete;
+    ShaderHandle& operator=(const ShaderHandle&) = delete;
+
+    ShaderHandle(ShaderHandle&& o) noexcept : id(o.id) { o.id = 0; }
+
+    ShaderHandle& operator=(ShaderHandle&& o) noexcept
+    {
+        if (this != &o) {
+            if (id)
+                glDeleteProgram(id);
+            id = o.id;
+            o.id = 0;
+        }
+        return *this;
+    }
+
+    bool valid() const { return id != 0; }
+};
+
 class Shader {
 private:
-    GLuint m_Handle;
+    ShaderHandle _handle;
     std::vector<GLuint> m_Stages;
     mutable std::unordered_map<std::string, int> m_UniformLocations;
 
 public:
-    Shader();
+    Shader() = default;
     Shader(const std::string& vertexPath, const std::string& fragmentPath);
-    ~Shader();
 
-    // move assignment
-    Shader& operator=(Shader&& other);
-    // move constructor
-    Shader(Shader&& other);
+    Shader& operator=(Shader&& other) noexcept = default;
+    Shader(Shader&& other) noexcept = default;
 
     Shader(const Shader&) = delete;
     Shader& operator=(const Shader&) = delete;
@@ -89,7 +117,7 @@ public:
 
     bool uniformExists(const std::string& name);
 
-    GLuint handle() const;
+    const ShaderHandle& handle() const { return _handle; }
 
 private:
     GLint getUniformLocation(const std::string& name, bool warn = true) const;
