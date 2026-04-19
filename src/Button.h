@@ -32,12 +32,14 @@ public:
           background(createChild<RoundedColoredRect>(alignment::ElementAlignment(), color, 15.0f,
                                                      shapeRenderer)),
           text(createChild<VerticalCenterer>().createChild<HorisontalCenterer>().createChild<Text>(
-              alignment::ElementAlignment(), textColor, textSize, text, textRenderer)) {
+              alignment::ElementAlignment(), textColor, textSize, text, textRenderer))
+    {
         focusable = true;
         this->text.wrapTightly = true;
     }
 
-    virtual void onMouseMotionEvent(Input& input, input::MouseMotionEvent event) override {
+    virtual void onMouseMotionEvent(Input& input, input::MouseMotionEvent event) override
+    {
         switch (event.action) {
         case input::MouseMotionAction::Enter:
             background.color = hoverColor;
@@ -45,10 +47,13 @@ public:
         case input::MouseMotionAction::Exit:
             background.color = color;
             break;
+        case input::MouseMotionAction::Move:
+            break;
         };
     }
 
-    virtual void onMouseButtonEvent(Input& input, input::MouseButtonEvent event) override {
+    virtual void onMouseButtonEvent(Input& input, input::MouseButtonEvent event) override
+    {
         if (event.button == input::MouseButton::Left) {
             switch (event.action) {
             case input::MouseButtonAction::Press:
@@ -63,12 +68,14 @@ public:
     }
 
 private:
-    static constexpr glm::vec4 calculateTextColor(glm::vec4 backgroundColor) {
+    static constexpr glm::vec4 calculateTextColor(glm::vec4 backgroundColor)
+    {
         const float luminance
             = 0.299f * backgroundColor.r + 0.587f * backgroundColor.g + 0.114f * backgroundColor.b;
         if (luminance < 0.726) {
             return {1.0f, 1.0f, 1.0f, 1.0f};
-        } else {
+        }
+        else {
             return {0.0f, 0.0f, 0.0f, 1.0f};
         }
     }

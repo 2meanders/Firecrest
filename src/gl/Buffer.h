@@ -96,7 +96,7 @@ public:
         unbind();
     }
 
-    inline BufferHandle getHandle() const { return _handle; }
+    inline const BufferHandle& getHandle() const { return _handle; }
     inline GLsizeiptr getSize() const { return m_Size; }
 };
 } // namespace fc::gl
