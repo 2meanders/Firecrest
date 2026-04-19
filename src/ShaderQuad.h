@@ -105,9 +105,11 @@ public:
         shader.setUniformMat4f("transform", transform);
 
         _shape.vao.bind();
+        _shape.ibo.bind();
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_shape.ibo.getCount()), GL_UNSIGNED_INT,
                        nullptr);
         _shape.vao.unbind();
+        _shape.ibo.unbind();
     }
 };
 } // namespace fc
