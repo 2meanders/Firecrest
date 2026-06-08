@@ -25,6 +25,7 @@
 #include "TextInput.h"
 #include "TextRenderer.h"
 #include "TexturedBatchRenderer.h"
+#include "UniformGrid.h"
 #include "VerticalCenterer.h"
 #include "VerticalContainer.h"
 #include "VerticalPositioning.h"

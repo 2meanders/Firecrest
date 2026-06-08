@@ -24,22 +24,12 @@ int main() {
     TextRenderer& textRenderer
         = display.createRenderer<TextRenderer>(RESOURCES_PATH "JetBrainsMono-Regular.ttf");
 
-    auto& v1 = display.createChild<Container>(alignment::ElementAlignment()
-                                                  .setWidth(alignment::Relative(0.5))
-                                                  .setHeight(alignment::Relative(0.5)));
-    auto& v2 = display.createChild<Container>(alignment::ElementAlignment()
-                                                  .setWidth(alignment::Relative(0.5))
-                                                  .setHeight(alignment::Relative(0.5))
-                                                  .setY(alignment::Relative(0.5)));
-    auto& v3 = display.createChild<Container>(alignment::ElementAlignment()
-                                                  .setWidth(alignment::Relative(0.5))
-                                                  .setHeight(alignment::Relative(0.5))
-                                                  .setX(alignment::Relative(0.5)));
-    auto& v4 = display.createChild<Container>(alignment::ElementAlignment()
-                                                  .setWidth(alignment::Relative(0.5))
-                                                  .setHeight(alignment::Relative(0.5))
-                                                  .setX(alignment::Relative(0.5))
-                                                  .setY(alignment::Relative(0.5)));
+    auto& grid = display.createChild<UniformGrid>(alignment::ElementAlignment(), 2, 2);
+
+    auto& v1 = grid.at(0, 0);
+    auto& v2 = grid.at(0, 1);
+    auto& v3 = grid.at(1, 0);
+    auto& v4 = grid.at(1, 1);
 
     auto& textInput = v1.createChild<TextInput>(
         alignment::ElementAlignment(), glm::vec4(1, 1, 1, 1), glm::vec4(0.1, 0.1, 0.1, 1), 24.0f,
