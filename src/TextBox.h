@@ -9,14 +9,14 @@ namespace fc {
 class TextBox : public Container {
 public:
     Text& text;
-    ColoredRect& _background;
+    ColoredRect& background;
 
 public:
     TextBox(alignment::ElementAlignment alignment, glm::vec4 backgroundColor, glm::vec4 textColor,
             float textSize, const std::string& text, ShapeRenderer2D& boxRenderer,
             TextRenderer& textRenderer)
         : Container(alignment),
-          _background(createChild<ColoredRect>(alignment::ElementAlignment(), backgroundColor,
+          background(createChild<ColoredRect>(alignment::ElementAlignment(), backgroundColor,
                                                boxRenderer)),
           text(createChild<Text>(alignment, textColor, textSize, text, textRenderer)) {
         this->alignment.setX(alignment.x);
@@ -31,7 +31,7 @@ public:
     }
 
     virtual void render(const Window& window, time::Duration delta) override {
-        _background.render(window, delta);
+        background.render(window, delta);
         text.render(window, delta);
     }
 };

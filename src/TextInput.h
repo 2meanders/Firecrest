@@ -9,7 +9,7 @@ public:
 
 private:
     int32_t _cursorPosition = 0;
-    int cursorBlinkCounter = 0;
+    int _cursorBlinkCounter = 0;
     bool _showCursor = false;
     ShapeRenderer2D& _renderer;
     glm::vec4 _backgroundColor;
@@ -49,20 +49,20 @@ public:
 
         // Draw cursor
         const int interval = 60; // Blink every 30 frames
-        if (cursorBlinkCounter % interval < interval / 2 && _showCursor) {
+        if (_cursorBlinkCounter % interval < interval / 2 && _showCursor) {
             const auto pos = cursorPixelPos();
             const float lineHeight = text.renderer.lineHeight(text.textSize);
             const float relY = -0.2f * lineHeight;
             _renderer.rect(window, glm::vec3(pos, 0) + glm::vec3(0, relY - getScrollOffset(), 0),
                            {3, lineHeight}, text.color);
         }
-        cursorBlinkCounter++;
+        _cursorBlinkCounter++;
     }
 
     virtual void onKeyboardEvent(Input& input, input::KeyboardEvent event) override
     {
         if (event.action == input::KeyAction::Press || event.action == input::KeyAction::Repeat) {
-            cursorBlinkCounter = 0;
+            _cursorBlinkCounter = 0;
 
             switch (event.key) {
             case GLFW_KEY_BACKSPACE:
@@ -221,7 +221,7 @@ public:
     virtual void onFocusAquired() override
     {
         _showCursor = true;
-        cursorBlinkCounter = 0;
+        _cursorBlinkCounter = 0;
     }
     virtual void onFocusLost() override { _showCursor = false; }
 

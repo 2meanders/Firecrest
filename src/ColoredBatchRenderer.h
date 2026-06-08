@@ -25,16 +25,16 @@ private:
     const uint32_t VERTICES_PER_QUAD = 4;
 
 private:
-    std::vector<ColoredBatchRenderer::Vertex> vertices;
+    std::vector<ColoredBatchRenderer::Vertex> _vertices;
 
-    std::vector<GLuint> indices;
-    gl::IndexBuffer ibo;
-    gl::VertexBuffer vbo;
-    gl::VertexArray vao;
-    res::ShaderHandle shader;
+    std::vector<GLuint> _indices;
+    gl::IndexBuffer _IBO;
+    gl::VertexBuffer _VBO;
+    gl::VertexArray _VAO;
+    res::ShaderHandle _shader;
 
-    res::ResourceManager& resourceManager;
-    Window& window;
+    res::ResourceManager& _resourceManager;
+    Window& _window;
 
 private:
     void createIndicesForQuads(size_t quadCount);

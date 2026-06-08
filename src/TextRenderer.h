@@ -22,8 +22,8 @@ private:
 
 private:
     gl::Shader _textShader;
-    gl::VertexArray _vao;
-    gl::VertexBuffer _vbo;
+    gl::VertexArray _VAO;
+    gl::VertexBuffer _VBO;
 
     Charset _charset;
 

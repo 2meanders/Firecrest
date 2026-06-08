@@ -100,12 +100,12 @@ void Shader::addStageSource(const GLenum shaderType, const std::string& source)
         return;
     }
 
-    m_Stages.push_back(shaderID);
+    _stages.push_back(shaderID);
 }
 
 void Shader::link()
 {
-    for (const GLuint& shader : m_Stages) {
+    for (const GLuint& shader : _stages) {
         glAttachShader(_handle.id, shader);
     }
     glLinkProgram(_handle.id);
@@ -126,7 +126,7 @@ void Shader::link()
 
     glValidateProgram(_handle.id);
 
-    for (const GLuint& shader : m_Stages) {
+    for (const GLuint& shader : _stages) {
         glDeleteShader(shader);
     }
 }
@@ -329,15 +329,15 @@ bool Shader::uniformExists(const std::string& name)
 
 GLint Shader::getUniformLocation(const std::string& name, bool warn) const
 {
-    if (m_UniformLocations.find(name) != m_UniformLocations.end())
-        return m_UniformLocations[name];
+    if (_uniformLocations.find(name) != _uniformLocations.end())
+        return _uniformLocations[name];
     GLint location = glGetUniformLocation(_handle.id, name.c_str());
     if (location == -1 && warn) {
         std::cout << "Warning: uniform " << name << " does not exist in shader: " << _handle.id
                   << std::endl;
         return -1;
     }
-    m_UniformLocations[name] = location;
+    _uniformLocations[name] = location;
     return location;
 }
 } // namespace fc::gl

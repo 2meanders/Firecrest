@@ -23,18 +23,18 @@ private:
     const uint32_t VERTICES_PER_QUAD = 4;
 
 private:
-    std::vector<TexturedBatchRenderer::Vertex> vertices;
-    res::ResourceManager& resourceManager;
+    std::vector<TexturedBatchRenderer::Vertex> _vertices;
+    res::ResourceManager& _resourceManager;
 
-    glm::mat4 m_View;
-    glm::mat4 m_Projection;
+    glm::mat4 _view;
+    glm::mat4 _projection;
 
-    std::vector<res::TextureHandle> textures;
-    std::vector<GLuint> indices;
-    gl::IndexBuffer ibo;
-    gl::VertexBuffer vbo;
-    gl::VertexArray vao;
-    res::ShaderHandle shader;
+    std::vector<res::TextureHandle> _textures;
+    std::vector<GLuint> _indices;
+    gl::IndexBuffer _IBO;
+    gl::VertexBuffer _VBO;
+    gl::VertexArray _VAO;
+    res::ShaderHandle _shader;
 
 private:
     void createIndicesForQuads(size_t quadCount);

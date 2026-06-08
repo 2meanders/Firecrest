@@ -58,16 +58,16 @@ TextRenderer::TextRenderer(const std::string& fontPath) : _charset(fontPath) {
     _textShader.link();
 
     // Setup VAO/VBO
-    _vao.bind();
+    _VAO.bind();
     gl::VertexBufferLayout layout;
     layout.push(GL_FLOAT, 3); // pos
     layout.push(GL_FLOAT, 2); // uv
-    _vao.addBuffer(_vbo, layout);
-    _vbo.bind();
+    _VAO.addBuffer(_VBO, layout);
+    _VBO.bind();
     // Reserve enough space for one string (can grow dynamically if needed)
-    _vbo.setData(nullptr, sizeof(Vertex) * 1024 * 6, GL_DYNAMIC_DRAW);
-    _vao.unbind();
-    _vbo.unbind();
+    _VBO.setData(nullptr, sizeof(Vertex) * 1024 * 6, GL_DYNAMIC_DRAW);
+    _VAO.unbind();
+    _VBO.unbind();
 }
 
 void TextRenderer::renderText(const Window& window, const std::string& text, glm::vec3 pos,
@@ -90,7 +90,7 @@ void TextRenderer::renderText(glm::vec2 viewportSize, const std::string& text, g
     _textShader.setUniform1i("atlas", 0);
     _charset.atlas().bind(0);
 
-    _vao.bind();
+    _VAO.bind();
 
     std::vector<Vertex> vertices;
     vertices.reserve(text.size() * 6);
@@ -129,13 +129,13 @@ void TextRenderer::renderText(glm::vec2 viewportSize, const std::string& text, g
     }
 
     // Upload all vertices at once
-    _vbo.bind();
-    _vbo.editData(vertices.data(), 0, vertices.size() * sizeof(Vertex));
-    _vao.bind();
+    _VBO.bind();
+    _VBO.editData(vertices.data(), 0, vertices.size() * sizeof(Vertex));
+    _VAO.bind();
     glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(vertices.size()));
 
-    _vao.unbind();
-    _vbo.unbind();
+    _VAO.unbind();
+    _VBO.unbind();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

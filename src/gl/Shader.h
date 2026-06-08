@@ -43,8 +43,8 @@ struct ShaderHandle {
 class Shader {
 private:
     ShaderHandle _handle;
-    std::vector<GLuint> m_Stages;
-    mutable std::unordered_map<std::string, int> m_UniformLocations;
+    std::vector<GLuint> _stages;
+    mutable std::unordered_map<std::string, int> _uniformLocations;
 
 public:
     Shader() = default;

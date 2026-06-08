@@ -35,12 +35,12 @@ struct BufferHandle {
     bool valid() const { return id != 0; }
 };
 
-template <GLenum t_Type>
+template <GLenum tType>
 class Buffer {
 protected:
     BufferHandle _handle;
 
-    GLsizeiptr m_Size;
+    GLsizeiptr _size;
 
 public:
     Buffer() = default;
@@ -51,52 +51,52 @@ public:
     Buffer(const Buffer&) = delete;
     Buffer& operator=(const Buffer&) = delete;
 
-    inline void bind() const { glBindBuffer(t_Type, _handle.id); }
+    inline void bind() const { glBindBuffer(tType, _handle.id); }
 
-    inline void unbind() const { glBindBuffer(t_Type, 0); }
+    inline void unbind() const { glBindBuffer(tType, 0); }
 
-    void setData(const void* data) { setData(data, 0, m_Size); }
+    void setData(const void* data) { setData(data, 0, _size); }
 
     void editData(const void* data, GLintptr offset, GLsizeiptr size)
     {
         bind();
-        glBufferSubData(t_Type, offset, size, data);
+        glBufferSubData(tType, offset, size, data);
         unbind();
     }
 
     void setData(const void* data, GLsizeiptr size, GLenum usage)
     {
         bind();
-        glBufferData(t_Type, size, data, usage);
-        m_Size = size;
+        glBufferData(tType, size, data, usage);
+        _size = size;
         unbind();
     }
 
-    void getData(void* dest) const { getData(dest, 0, m_Size); }
+    void getData(void* dest) const { getData(dest, 0, _size); }
 
     void getData(void* dest, GLintptr offset, GLsizeiptr size) const
     {
         bind();
-        glGetBufferSubData(t_Type, offset, size, dest);
+        glGetBufferSubData(tType, offset, size, dest);
         unbind();
     }
 
-    void* dataPointer(GLbitfield access) { return dataPointer(0, m_Size, access); }
+    void* dataPointer(GLbitfield access) { return dataPointer(0, _size, access); }
 
     void* dataPointer(GLintptr offset, GLsizeiptr size, GLbitfield access)
     {
         bind();
-        void* ptr = glMapBufferRange(t_Type, offset, size, access);
+        void* ptr = glMapBufferRange(tType, offset, size, access);
         return ptr;
     }
 
     void close()
     {
-        glUnmapBuffer(t_Type);
+        glUnmapBuffer(tType);
         unbind();
     }
 
     inline const BufferHandle& getHandle() const { return _handle; }
-    inline GLsizeiptr getSize() const { return m_Size; }
+    inline GLsizeiptr getSize() const { return _size; }
 };
 } // namespace fc::gl
