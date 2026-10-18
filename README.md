@@ -14,4 +14,10 @@ The library's architecture focuses on providing components that can be easily co
 
 ## Building
 
-Firecrest uses CMake as its build system.
+Firecrest uses CMake and vcpkg's manifest mode for third-party build dependencies.
+
+### Prerequisites
+
+A C++20 compiler, CMake 3.23 or newer, and Git.
+
+For an existing clone, initialize the submodules with `git submodule update --init --recursive` before configuring.

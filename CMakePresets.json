@@ -1,0 +1,26 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "vcpkg",
+            "displayName": "Vcpkg",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_TARGET_TRIPLET": "x64-linux"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "vcpkg",
+            "configurePreset": "vcpkg"
+        }
+    ]
+}

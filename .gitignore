@@ -3,5 +3,3 @@
 /.vscode
 /build
 /out
-CMakePresets.json
-CMakeSettings.json

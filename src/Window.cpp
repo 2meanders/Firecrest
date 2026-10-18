@@ -3,6 +3,7 @@
 #include "gl/RenderRegion.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include <iostream>
+#include <stdexcept>
 
 namespace fc {
 
@@ -11,8 +12,12 @@ void APIENTRY debugOutput(GLenum source, GLenum type, unsigned int id, GLenum se
 
 Window::Window(WindowProperties& properties)
 {
+    glfwSetErrorCallback([](int code, const char* description) {
+        std::cerr << "GLFW error " << code << ": " << description << std::endl;
+    });
+
     if (!glfwInit()) {
-        std::cout << "Failed to initialize GLFW" << std::endl;
+        throw std::runtime_error("Failed to initialize GLFW");
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -34,8 +39,8 @@ Window::Window(WindowProperties& properties)
     _handle = glfwCreateWindow(properties.width, properties.height, properties.title.c_str(), NULL,
                                NULL);
     if (!_handle) {
-        std::cout << "Failed to create window" << std::endl;
         glfwTerminate();
+        throw std::runtime_error("Failed to create GLFW window");
     }
     _input.setWindow(_handle);
 
@@ -77,8 +82,9 @@ Window::Window(WindowProperties& properties)
     glfwShowWindow(_handle);
 
     if (!gladLoadGL()) {
-        std::cout << "Failed to initialize OpenGL context" << std::endl;
-        return;
+        glfwDestroyWindow(_handle);
+        glfwTerminate();
+        throw std::runtime_error("Failed to initialize OpenGL context");
     }
 
     glfwSetWindowSizeCallback(_handle, sizeCallback);
