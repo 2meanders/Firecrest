@@ -306,7 +306,7 @@ std::string Shader::fileSource(const std::string& filePath) {
     while (getline(stream, line)) {
         // File including other file
         if (line.rfind("#include", 0) == 0) {
-            line.erase(0, line.find_first_of("\"<"));
+            line.erase(0, line.find_first_of("\"<") + 1);
             utils::trim(line);
             line.pop_back();
 
