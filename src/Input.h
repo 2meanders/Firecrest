@@ -24,13 +24,13 @@ private:
 
     glm::vec2 _currMouse;
     glm::vec2 _lastMouse;
-    bool _mouseButtons[GLFW_MOUSE_BUTTON_LAST];
-    bool _mouseButtonsReleased[GLFW_MOUSE_BUTTON_LAST];
-    bool _mouseButtonsJustPressed[GLFW_MOUSE_BUTTON_LAST];
+    bool _mouseButtons[GLFW_MOUSE_BUTTON_LAST + 1];
+    bool _mouseButtonsReleased[GLFW_MOUSE_BUTTON_LAST + 1];
+    bool _mouseButtonsJustPressed[GLFW_MOUSE_BUTTON_LAST + 1];
 
-    bool _keys[GLFW_KEY_LAST];
-    bool _keysReleased[GLFW_KEY_LAST];
-    bool _keysJustPressed[GLFW_KEY_LAST];
+    bool _keys[GLFW_KEY_LAST + 1];
+    bool _keysReleased[GLFW_KEY_LAST + 1];
+    bool _keysJustPressed[GLFW_KEY_LAST + 1];
 
     std::vector<input::UnicodeCodePoint> _typedCharacters;
 

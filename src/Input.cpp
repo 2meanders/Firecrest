@@ -39,6 +39,7 @@ void Input::mouseButtonCallback(GLFWwindow* window, int button, int action, int 
     event.button = static_cast<input::RawMouseButton>(button);
     event.action = action == GLFW_PRESS ? input::RawMouseButtonAction::Press
                                         : input::RawMouseButtonAction::Up;
+    event.mods = mods;
 
     for (MouseButtonEventCallback& callback : _mouseButtonEventCallbacks) {
         callback(event);
@@ -130,9 +131,11 @@ void Input::update() {
         case input::RawMouseButtonAction::Press:
             _mouseButtons[static_cast<int>(e.button)] = true;
             _mouseButtonsJustPressed[static_cast<int>(e.button)] = true;
+            break;
         case input::RawMouseButtonAction::Up:
             _mouseButtons[static_cast<int>(e.button)] = false;
             _mouseButtonsReleased[static_cast<int>(e.button)] = true;
+            break;
         }
     }
     _recentMouseButtonEvents.clear();
